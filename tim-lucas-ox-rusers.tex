@@ -1,0 +1,586 @@
+\documentclass{beamer}
+\usetheme{Pittsburgh}
+
+\usepackage{enumitem, colortbl}
+\usepackage[pagewise,displaymath, mathlines]{lineno}
+\usepackage{comment}
+\usepackage{listings}
+\usepackage{fancyvrb}
+
+
+%\usepackage{tikz}
+
+%\usetikzlibrary{automata,positioning}
+
+\usepackage{animate}
+%\usepackage[scaled]{berasans}
+\renewcommand*\familydefault{\sfdefault} %% Only if the base font of the document is to be sans serif
+
+\usepackage[T1]{fontenc}
+
+%\usepackage{epstopdf}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{background}{\includegraphics[width=\paperwidth]{../Brown-Paper-6.jpg}}
+
+\title % (optional, only for long titles)
+{\textbf{Caret and zoon}: machine learning, ecology and domain specific package systems}
+\author % (optional, for multiple authors)
+{Tim~\small{C.D.}~\normalsize{Lucas}}
+\institute % (optional)
+{
+  Malaria Atlas Project\\
+  Oxford
+}
+%\usepackage{PSTricks}
+
+\makeatletter
+\newlength\beamerleftmargin
+\setlength\beamerleftmargin{\Gm@lmargin}
+
+
+\begin{document}
+
+\begin{frame}
+
+\frametitle{\textbf{Caret and zoon}: machine learning, ecology and domain specific package systems
+\\}
+\vspace{3cm}
+\framesubtitle{{\color{black} \normalsize{Tim}~\small{C.D.}~\normalsize{Lucas}
+\hbox{}\\
+\vspace{3mm}
+{\small Malaria Atlas Project, BDI, Oxford}}\\
+\includegraphics[height=7pt]{Twitter_logo_blue-small.png}{\color{black} \hspace{0.6mm}\footnotesize{@}\small{timcdlucas}  \footnotesize{@}\small{statsforbios}}\\
+\includegraphics[height=7pt]{Ar_Icon_Contact.pdf}{\color{black}  \hspace{0.6mm}\small{timcdlucas}\footnotesize{@}\small{gmail.com}}}
+
+%\hspace{-6cm}
+\vspace{-3cm}
+%\hbox{
+%\include{gasModel1.tex}
+%\includegraphics[height=0.5\textheight]{gasModel1.png}
+%}
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Who am I?}
+	\begin{itemize}
+	\item Malaria Atlas Project at BDI
+	\item Malaria, maps, geostatistics
+
+	\end{itemize}	
+% Your image included here
+	\centerline{
+    \includegraphics[width=0.8\paperwidth]{03_Country_Comparison_API_India.png}
+	}
+\end{frame} 
+
+
+
+
+\begin{frame}
+\frametitle{Who am I?}
+\framesubtitle{R packages}
+	\begin{itemize}
+	\item Zoon 
+	\item INLAutils
+	\item palettetown - my greatest ever achievement
+	\end{itemize}	
+% Your image included here
+	\centerline{
+    \includegraphics[height = 0.59\textheight]{pokedex-4.png}
+	}
+\end{frame} 
+
+
+
+
+\begin{frame}
+\frametitle{Talk overview}
+\begin{block}{caret}
+	\begin{itemize}
+	\item General package for machine learning.
+	\item Introduction to the package.
+    \item A domain specific package ecosystem?
+	\end{itemize}
+\end{block}
+\begin{block}{zoon}
+	\begin{itemize}
+		\item General package for species distribution modelling.
+    \item What are SDMs?
+    \item Package overview.
+	\end{itemize}
+
+\end{block}
+
+
+
+\begin{block}{Domain specific ecosystems}
+
+	\begin{itemize}
+	\item Other examples.
+	\item Are they a good thing?
+	\end{itemize}
+\end{block}
+
+\end{frame} 
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{What is machine learning?}
+\begin{figure}
+    \includegraphics[width = 0.6\textwidth]{classification}
+\end{figure} 
+\begin{figure}
+
+    \includegraphics[width = 0.6\textwidth]{regression}
+\end{figure} 
+\end{frame} 
+
+
+
+
+\begin{frame}
+\frametitle{What is machine learning?}
+\begin{itemize}
+\item Only care about prediction
+\item Not mechanistic/process based models
+\item Not inference
+\end{itemize}
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{Cross-validation}
+\begin{figure}
+ \animategraphics[loop,autoplay, width = 0.6\textwidth]{1}{frame-}{0}{2}
+\end{figure} 
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{Hyperparameters}
+\begin{figure}
+ \animategraphics[loop,autoplay, width = 0.7\textwidth]{1}{scale-}{0}{2}
+\end{figure} 
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{Hyperparameters}
+\begin{itemize}
+\item Number of PCA coordinates
+\item Cut-offs for variable selection
+\item $x + x^2 + x^3 + x^4 + ...$
+\end{itemize}
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{No free lunch}
+No such thing as a universal, `best' machine learning model.
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{caret}
+https://topepo.github.io/caret/model-training-and-tuning.html
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{What does caret do?}
+\begin{figure}
+    \includegraphics[height = 0.8\textheight]{Capture}
+\end{figure} 
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{What does caret do?}
+\begin{figure}
+    \includegraphics[height = 0.8\textheight]{gbm2opt}
+\end{figure} 
+\end{frame} 
+
+
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{Training a model}
+\begin{Verbatim}
+
+m1 <- train(Species ~ ., 
+            iris,
+            method = `gbm')
+
+\end{Verbatim}
+
+\begin{figure}
+    \includegraphics[height = 0.5\textheight]{train_gbm}
+\end{figure} 
+\end{frame} 
+
+
+\begin{frame}[fragile]
+\frametitle{Training a different model}
+\renewcommand{\FancyVerbFormatLine}[1]{%
+   \ifnum\value{FancyVerbLine}=3\color{cyan}#1%
+   \else #1\fi}
+
+\begin{Verbatim}
+m2 <- train(Species ~ ., 
+            iris,
+            method = `nnet')
+\end{Verbatim}
+
+\begin{figure}
+    \includegraphics[height = 0.5\textheight]{train_nnet}
+\end{figure} 
+\end{frame} 
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{Controlling Crossvalidation}
+\renewcommand{\FancyVerbFormatLine}[1]{%
+   \ifnum\value{FancyVerbLine}=1\color{cyan}#1%
+   \else #1\fi}
+
+\begin{Verbatim}
+tr <- trainControl(method = `cv', number = 5)
+
+m3 <- train(Species ~ ., 
+            iris,
+            trControl = tr,
+            method = `nnet')
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+\begin{frame}[fragile]
+\frametitle{Try more hyperparameter values}
+\renewcommand{\FancyVerbFormatLine}[1]{%
+   \ifnum\value{FancyVerbLine}=3\color{cyan}#1%
+   \else #1\fi}
+
+\begin{Verbatim}
+m4 <- train(Species ~ ., 
+            iris,
+            tuneLength = 10,
+            method = `nnet')
+\end{Verbatim}
+
+\begin{figure}
+    \includegraphics[height = 0.5\textheight]{train_nnet_tuneLength}
+\end{figure} 
+\end{frame} 
+
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{Use chosen hyperparameter values}
+\renewcommand{\FancyVerbFormatLine}[1]{%
+   \ifnum\value{FancyVerbLine}=3\color{cyan}#1%
+   \else%
+   \ifnum\value{FancyVerbLine}=4\color{cyan}#1%
+   \else #1\fi\fi}
+
+\begin{Verbatim}
+m5 <- train(Species ~ ., 
+            iris,
+            tuneGrid = expand.grid(size=c(1,5,10,20), 
+                                   decay=seq(0,0.1,0.01)),
+            method = `nnet')
+\end{Verbatim}
+
+\begin{figure}
+    \includegraphics[height = 0.5\textheight]{train_nnet_tuneGrid}
+\end{figure} 
+\end{frame} 
+
+
+
+
+
+\begin{frame}
+\frametitle{Contributions}
+	\begin{itemize}
+	\item Add your own models.
+	\item Share by github pull request.
+	\item But aim is for devs to keep package up to date.
+	\end{itemize}
+\end{frame} 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%% zoon.
+
+
+
+
+\begin{frame}[plain]
+    \hspace*{-\beamerleftmargin}%
+    \includegraphics[width=\paperwidth,width=\paperwidth]{zoonSlide}
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{Who develops zoon?}
+\begin{itemize}
+\item Tom August
+\item Me
+\item Nick Golding
+\item Emiel van Loon
+\item David Gavaghan
+\item Greg McInerny
+\end{itemize}
+\end{frame} 
+
+\begin{frame}
+\frametitle{What is species distribution modelling?}
+\begin{figure}
+    \includegraphics[height = 0.6\textheight]{classification2}
+\end{figure} 
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{What is species distribution modelling?}
+\begin{figure}
+    \includegraphics[height = 0.8\textheight]{fengChangeWorkflow-1.pdf}
+\end{figure} 
+\end{frame} 
+
+
+\begin{frame}[fragile]
+\frametitle{A basic workflow}
+%\vspace{-1cm}
+\begin{figure}
+    \includegraphics[width = \textwidth]{diagrams}
+\end{figure} 
+\begin{Verbatim}
+work1 <- workflow(
+  occurrence = UKAnophelesPlumbeus,
+  covariate  = UKAir,
+  process    = OneHundredBackground,
+  model      = RandomForest,
+  output     = PrintMap
+)
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+\begin{frame}[fragile]
+\frametitle{What does zoon do?}
+
+\begin{figure}
+    \includegraphics[height = 0.85\textheight]{modules}
+\end{figure} 
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{A different model}
+%\vspace{-1cm}
+\begin{figure}
+    \includegraphics[width = \textwidth]{diagrams}
+\end{figure} 
+\renewcommand{\FancyVerbFormatLine}[1]{%
+   \ifnum\value{FancyVerbLine}=5\color{cyan}#1%
+   \else #1\fi}
+
+\begin{Verbatim}
+work2 <- workflow(
+  occurrence = UKAnophelesPlumbeus,
+  covariate  = UKAir,
+  process    = OneHundredBackground,
+  model      = MaxEnt,
+  output     = PrintMap
+)
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+\begin{frame}[fragile]
+\frametitle{A different workflow}
+%\vspace{-1cm}
+\begin{figure}
+    \includegraphics[width = \textwidth]{diagrams}
+\end{figure} 
+\renewcommand{\FancyVerbFormatLine}[1]{%
+   \ifnum\value{FancyVerbLine}=3\color{cyan}#1%
+   \else%
+   \ifnum\value{FancyVerbLine}=6\color{cyan}#1%
+   \else #1\fi\fi}
+
+\begin{Verbatim}
+work3 <- workflow(
+  occurrence = UKAnophelesPlumbeus,
+  covariate  = UKBioclim,
+  process    = Background(n = 500),
+  model      = RandomForest,
+  output     = Appify
+)
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+\begin{frame}[fragile]
+\frametitle{caret in zoon}
+\begin{figure}
+    \includegraphics[width = \textwidth]{diagrams}
+\end{figure} 
+\renewcommand{\FancyVerbFormatLine}[1]{%
+   \ifnum\value{FancyVerbLine}=5\color{cyan}#1%
+   \else%
+   \ifnum\value{FancyVerbLine}=6\color{cyan}#1%
+   \else #1\fi\fi}
+\begin{Verbatim}
+work4 <- workflow(
+  occurrence = UKAnophelesPlumbeus,
+  covariate  = UKAir,
+  process    = OneHundredBackground,
+  model      = MachineLearn(method = `nnet', 
+                            tuneLength = 8),
+  output     = PrintMap
+)
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{A more complicated workflow}
+%\vspace{-1cm}
+\begin{figure}
+    \includegraphics[width = \textwidth]{diagrams}
+\end{figure} 
+\begin{Verbatim}
+work5 <- workflow(
+  occurrence = SpOcc(species = `Eresus kollari', 
+                     extent = c(-10, 10, 45, 65)),
+  covariate  = UKBioclim,
+  process    = BackgroundAndCrossvalid(k = 5),
+  model      = list(LogisticRegression,
+                    RandomForest),
+  output     = Chain(PrintMap(plot = FALSE),
+                     PerformanceMeasures)
+)
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+
+\begin{frame}
+\frametitle{Contributions}
+	\begin{itemize}
+	\item Add your own methods.
+	\item Share by web form or github.
+	\item Not the aim for devs to keep package up to date.
+	\end{itemize}
+\end{frame} 
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%% package ecosystems.
+
+
+
+\begin{frame}
+\frametitle{Package ecosystems}
+\huge{Cue hand-waving}
+\end{frame} 
+
+\begin{frame}
+\frametitle{Package ecosystems}
+\begin{figure}
+    \includegraphics[height = 0.8\textheight]{continuum.pdf}
+\end{figure} 
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{Package ecosystems}
+\begin{figure}
+    \includegraphics[height = 0.8\textheight]{continuum_traits.pdf}
+\end{figure} 
+\end{frame} 
+
+
+
+
+\begin{frame}
+\frametitle{Any Questions ?}
+\vspace{2cm}
+\framesubtitle{{\color{black} \normalsize{Tim}~\small{C.D.}~\normalsize{Lucas}}}
+\end{frame}
+% title
+% Talk structure
+% Why
+% gas model pic1
+% gas model pic2
+% gas model pic3
+% gas model equation?
+%  
+%
+%
+% 
+% Model error
+% Model error square
+% 
+%
+%
+%
+%
+%
+%
+
+
+\end{document}
