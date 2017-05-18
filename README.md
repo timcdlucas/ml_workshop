@@ -15,3 +15,7 @@ Links
 [Caret documentation](https://topepo.github.io/caret/index.html)
 [zoon on gitub](https://github.com/zoonproject/zoon)
 [zoon in press paper](https://github.com/zoonproject/zoon_app_paper)
+
+
+![Zoon workflow](diagrams.png)
+
