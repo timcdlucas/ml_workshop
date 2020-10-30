@@ -67,11 +67,12 @@
 %what models count
 %2 tasks
 % famous examples
-%3 what is caret and it helps an interface with %those many different models
-%4 fit RF in caret
+%4 fit rpart in caret
 %- the data
 %- hold out
 %- error metric
+%3 what is caret and it helps an interface with %those many different models
+
 
 %5 what is ml good at
 %compare lm and RF in simplest caret
@@ -80,7 +81,7 @@
 %compare RF and Newton on planets and gravity
 %uncertainty
 
-
+%7 tuning parameters.
 %7 very flexible models
 %do x^6
 %overfitting
@@ -103,7 +104,7 @@
 
 %13 match error metric to question
 %14 ask questions with cv
-%15-17 trees, RF, enet in a bit more detail.
+%15-17 trees, RF, enet in a bit more detail. nnet.
 %18 no free lunch. try lots of models
 
 
@@ -136,23 +137,86 @@
 \end{enumerate}
 \end{frame} 
 
+\begin{frame}[fragile]
+\frametitle{Let's do Machine Learning: Data}
+Time until death data
+\begin{Verbatim}
+
+data(melanoma, package = "boot")
+
+head(melanoma)
+
+featurePlot(melanoma[, -1], 
+                     melanoma$time)
+
+\end{Verbatim}
+
+\end{frame} 
+
+\begin{frame}[fragile]
+\frametitle{ Let's do Machine Learning: Training a model}
+\begin{Verbatim}
+
+m0 <- train(time ~ ., 
+            data = melanoma,
+            method = 'rpart2')
+
+\end{Verbatim}
+
+\end{frame} 
+
+\begin{frame}
+\frametitle{Look at learned model}
+\vspace{-4mm}
+\begin{figure}
+    \includegraphics[width = 0.5\textwidth]{rpart_tree.pdf}
+\end{figure} 
+
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{Look at learned model}
+\vspace{2mm}
+\begin{figure}
+    \includegraphics[width = 0.6\textwidth]{rpart_annotate.pdf}
+\end{figure} 
+
+\end{frame} 
+
+
+
 
 \begin{frame}
 \frametitle{What is machine learning?}
-\framesubtitle{Supervised learning}
-\begin{figure}
-    \includegraphics[width = 0.6\textwidth]{classification}
-\end{figure} 
-\begin{figure}
+Supervised learning.
 
-    \includegraphics[width = 0.6\textwidth]{regression}
+Classification or regression.
+\begin{figure}
+    \includegraphics[width = 0.5\textwidth]{classification}%
+    \includegraphics[width = 0.5\textwidth]{regression}
 \end{figure} 
+
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{Caret package}
+\begin{itemize}
+\item https://topepo.github.io/caret/model-training-and-tuning.html
+\item Unified interface to hundreds of models
+\item Supervised learning
+\item Full ML workflow
+\item Excellent documentation
+\end{itemize}
+
 \end{frame} 
 
 
 \begin{frame}
 \frametitle{What is machine learning?}
-\framesubtitle{Other tasks}
+Other tasks:
 \begin{itemize}
 \item Reinforcement learning
 \begin{itemize}
@@ -169,49 +233,14 @@
 
 
 
-\begin{frame}
-\frametitle{caret}
-\begin{itemize}
-\item https://topepo.github.io/caret/model-training-and-tuning.html
-\item Unified interface to hundreds of models
-\item Full ML workflow
-\end{itemize}
 
-\end{frame} 
+
+
 
 
 
 \begin{frame}[fragile]
-\frametitle{Data}
-\framesubtitle{Time until death}
-\begin{Verbatim}
-
-data(melanoma, package = "boot")
-
-head(melanoma)
-
-featurePlot(melanoma[, -1], 
-                     melanoma$time)
-
-\end{Verbatim}
-
-\end{frame} 
-
-\begin{frame}[fragile]
-\frametitle{Training a model}
-\begin{Verbatim}
-
-m0 <- train(time ~ ., 
-            data = melanoma,
-            method = 'rf')
-
-\end{Verbatim}
-
-\end{frame} 
-
-
-\begin{frame}[fragile]
-\frametitle{Training a model}
+\frametitle{What is ML good at? Predicting new data.}
 \renewcommand{\FancyVerbFormatLine}[1]{%
    \ifnum\value{FancyVerbLine}=8\color{cyan}#1%
    \else #1\fi}
@@ -222,12 +251,16 @@ tr <- trainControl(
 
 m1 <- train(time ~ ., 
             data = melanoma,
-            method = 'rf',
+            method = 'rpart2',
             trControl = tr)
 
 \end{Verbatim}
 
 \end{frame} 
+
+
+
+
 
 
 \begin{frame}[fragile]
@@ -288,11 +321,85 @@ pl2 <- train(r ~ 0 + I(m1 * m2 / d ^ 2),
             method = 'lm',
             trControl = tr)
 
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{Basic ML workflow}
+\begin{Verbatim}
+tr2 <- trainControl(
+        method = 'repeatedcv',
+        repeats = 3,
+        number = 5)
+
+m1 <- train(time ~ ., 
+            data = melanoma,
+            method = 'rpart2',
+            tuneLength = 5,
+            metric = 'MAE',
+            trControl = tr2)
 
 \end{Verbatim}
 
 \end{frame} 
 
+
+
+
+\begin{frame}
+\frametitle{Maxdepth hyperparameter/tuning parameter}
+\vspace{-4mm}
+\begin{figure}
+    \includegraphics[width = 0.5\textwidth]{rpart_tree.pdf}
+\end{figure} 
+
+\end{frame} 
+
+
+
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{Overfitting}
+\renewcommand{\FancyVerbFormatLine}[1]{%
+   \ifnum\value{FancyVerbLine}=7\color{cyan}#1%
+   \else #1\fi}
+\begin{Verbatim}
+tr <- trainControl(
+        method = 'LGOCV',
+        number = 1)
+
+m2 <- train(time ~ . + age^6, 
+            data = melanoma,
+            method = 'lm',
+            trControl = tr)
+
+\end{Verbatim}
+
+\end{frame} 
+
+\begin{frame}
+\frametitle{Hyperparameters}
+\begin{itemize}
+\item Number of PCA coordinates
+\item Cut-offs for variable selection
+\item $x + x^2 + x^3 + x^4 + ...$
+\end{itemize}
+\end{frame} 
+
+\begin{frame}
+\frametitle{Hyperparameters}
+\begin{figure}
+ \animategraphics[loop,autoplay, width = 0.7\textwidth]{1}{scale-}{0}{2}
+\end{figure} 
+\end{frame} 
 
 
 
@@ -304,22 +411,10 @@ pl2 <- train(r ~ 0 + I(m1 * m2 / d ^ 2),
 \end{frame} 
 
 
-\begin{frame}
-\frametitle{Hyperparameters}
-\begin{figure}
- \animategraphics[loop,autoplay, width = 0.7\textwidth]{1}{scale-}{0}{2}
-\end{figure} 
-\end{frame} 
 
 
-\begin{frame}
-\frametitle{Hyperparameters}
-\begin{itemize}
-\item Number of PCA coordinates
-\item Cut-offs for variable selection
-\item $x + x^2 + x^3 + x^4 + ...$
-\end{itemize}
-\end{frame} 
+
+
 
 
 
@@ -455,6 +550,16 @@ m5 <- train(Species ~ .,
 
 
 
+
+\begin{frame}
+\frametitle{Other packages}
+\begin{itemize}
+\item mlr
+\item mlr3
+\item tidymodels
+\end{itemize}
+
+\end{frame} 
 
 
     
