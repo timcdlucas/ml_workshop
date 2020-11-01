@@ -96,13 +96,15 @@
 
 %11 inner outer. use outer for main research %question. which model is best or how well will %my model work in the real world.
 
+%13 match error metric to question
+
 
 %12 a full machine learning workflow.
 
 
 %extras:
 
-%13 match error metric to question
+
 %14 ask questions with cv
 %15-17 trees, RF, enet in a bit more detail. nnet.
 %18 no free lunch. try lots of models
@@ -340,7 +342,7 @@ tr2 <- trainControl(
 m1 <- train(time ~ ., 
             data = melanoma,
             method = 'rpart2',
-            tuneLength = 5,
+            tuneLength = 10,
             metric = 'MAE',
             trControl = tr2)
 
@@ -362,62 +364,158 @@ m1 <- train(time ~ .,
 
 
 
+\begin{frame}
+\frametitle{Tune maxdepth parameter with oos performance}
+\vspace{-4mm}
+\begin{figure}
+    \includegraphics[width = 0.5\textwidth]{rpart_perf.pdf}
+\end{figure} 
+
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{Why does performance decrease  with model complexity?}
+\vspace{-4mm}
+\begin{figure}
+    \includegraphics[width = 0.5\textwidth]{rpart_perf.pdf}
+\end{figure} 
+
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{Overfitting and bias/variance.}
+\vspace{-4mm}
+\begin{figure}
+    \includegraphics[width = 0.5\textwidth]{overfit.pdf}
+\end{figure} 
+
+\end{frame} 
+
 
 
 
 
 \begin{frame}[fragile]
-\frametitle{Overfitting}
-\renewcommand{\FancyVerbFormatLine}[1]{%
-   \ifnum\value{FancyVerbLine}=7\color{cyan}#1%
-   \else #1\fi}
+\frametitle{Crossvalidation}
 \begin{Verbatim}
-tr <- trainControl(
-        method = 'LGOCV',
-        number = 1)
+tr2 <- trainControl(
+        method = 'repeatedcv',
+        repeats = 3,
+        number = 5)
 
-m2 <- train(time ~ . + age^6, 
+m1 <- train(time ~ ., 
             data = melanoma,
-            method = 'lm',
-            trControl = tr)
+            method = 'rpart2',
+            tuneLength = 10,
+            metric = 'MAE',
+            trControl = tr2)
 
 \end{Verbatim}
 
 \end{frame} 
 
+
+
+
 \begin{frame}
-\frametitle{Hyperparameters}
+\frametitle{Crossvalidation}
+
 \begin{itemize}
-\item Number of PCA coordinates
-\item Cut-offs for variable selection
-\item $x + x^2 + x^3 + x^4 + ...$
+\item k-fold
+\begin{itemize}
+\item split into k group. user each group on turn as hold out.
+\end{itemize}
+\item Repeated k-fold
+\begin{itemize}
+\item Do k-for multiple times with different random splits.
+\end{itemize}
+\item Bootstrap
+\begin{itemize}
+\item Sample N with replacement as training.
+\end{itemize}
 \end{itemize}
 \end{frame} 
 
 \begin{frame}
-\frametitle{Hyperparameters}
+\frametitle{Crossvalidation}
+
+\begin{itemize}
+\item Spatial
+\item Temporal
+\item By covariates
+\item What question do you want to ask?
+\end{itemize}
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{Outer Crossvalidation}
+
+\begin{itemize}
+\item Selecting a model \emph{is part of the model}.
+\item If we consider many models, taking the best one is a form of overfitting
+\item Outer cross-validation of this is part of primary research question.
+\item Unfortunately not implemented in caret. Must do it manually.
+\end{itemize}
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{How noisy is performance?}
+\vspace{-4mm}
 \begin{figure}
- \animategraphics[loop,autoplay, width = 0.7\textwidth]{1}{scale-}{0}{2}
+    \includegraphics[width = 0.5\textwidth]{rpart_perf.pdf}
 \end{figure} 
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{Regularisation}
+
+\begin{itemize}
+\item The process of forcing a model to be simpler to avoid overfitting.
+\item Regularisation parameters.
+\end{itemize}
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{Error metrics: regression}
+
+\begin{itemize}
+\item Match error metric to question.
+\item Aim for interpretability.
+\item MAE, R^2
+\item RMSE, correlation are less interpretable
+\item Correlation isn't quite measuring what you think.
+\end{itemize}
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{Error metrics: regression}
+\begin{figure}
+    \includegraphics[width = 0.8\textwidth]{corr_mae.pdf}
+\end{figure} 
+
 \end{frame} 
 
 
 
 \begin{frame}
-\frametitle{Cross-validation}
-\begin{figure}
- \animategraphics[loop,autoplay, width = 0.6\textwidth]{1}{frame-}{0}{2}
-\end{figure} 
+\frametitle{Error metrics: classification}
+
+\begin{itemize}
+\item Match error metric to question.
+\item Aim for interpretability.
+\item Class balance. Model that never predicts rare class will have high accuracy.
+\item Kappa, AUC.
+\item 
+\end{itemize}
 \end{frame} 
-
-
-
-
-
-
-
-
-
 
 
 
@@ -433,115 +531,23 @@ No such thing as a universal, `best' machine learning model.
 
 
 
-\begin{frame}
-\frametitle{What does caret do?}
-\begin{figure}
-    \includegraphics[height = 0.8\textheight]{gbm2opt}
-\end{figure} 
-\end{frame} 
+
+
+
+
+
+ 
+
+
+
+
+ 
 
 
 
 
 
 
-\begin{frame}[fragile]
-\frametitle{Training a model}
-\begin{Verbatim}
-
-m1 <- train(Species ~ ., 
-            iris,
-            method = `gbm')
-
-\end{Verbatim}
-
-\begin{figure}
-    \includegraphics[height = 0.5\textheight]{train_gbm}
-\end{figure} 
-\end{frame} 
-
-
-\begin{frame}[fragile]
-\frametitle{Training a different model}
-\renewcommand{\FancyVerbFormatLine}[1]{%
-   \ifnum\value{FancyVerbLine}=3\color{cyan}#1%
-   \else #1\fi}
-
-\begin{Verbatim}
-m2 <- train(Species ~ ., 
-            iris,
-            method = `nnet')
-\end{Verbatim}
-
-\begin{figure}
-    \includegraphics[height = 0.5\textheight]{train_nnet}
-\end{figure} 
-\end{frame} 
-
-
-
-
-\begin{frame}[fragile]
-\frametitle{Controlling Crossvalidation}
-\renewcommand{\FancyVerbFormatLine}[1]{%
-   \ifnum\value{FancyVerbLine}=1\color{cyan}#1%
-   \else #1\fi}
-
-\begin{Verbatim}
-tr <- trainControl(method = `cv', number = 5)
-
-m3 <- train(Species ~ ., 
-            iris,
-            trControl = tr,
-            method = `nnet')
-\end{Verbatim}
-
-\end{frame} 
-
-
-
-\begin{frame}[fragile]
-\frametitle{Try more hyperparameter values}
-\renewcommand{\FancyVerbFormatLine}[1]{%
-   \ifnum\value{FancyVerbLine}=3\color{cyan}#1%
-   \else #1\fi}
-
-\begin{Verbatim}
-m4 <- train(Species ~ ., 
-            iris,
-            tuneLength = 10,
-            method = `nnet')
-\end{Verbatim}
-
-\begin{figure}
-    \includegraphics[height = 0.5\textheight]{train_nnet_tuneLength}
-\end{figure} 
-\end{frame} 
-
-
-
-
-
-\begin{frame}[fragile]
-\frametitle{Use chosen hyperparameter values}
-\renewcommand{\FancyVerbFormatLine}[1]{%
-   \ifnum\value{FancyVerbLine}=3\color{cyan}#1%
-   \else%
-   \ifnum\value{FancyVerbLine}=4\color{cyan}#1%
-   \else #1\fi\fi}
-
-\begin{Verbatim}
-m5 <- train(Species ~ ., 
-            iris,
-            tuneGrid = expand.grid(size=c(1,5,10,20), 
-                                   decay=seq(0,0.1,0.01)),
-            method = `nnet')
-\end{Verbatim}
-
-\begin{figure}
-    \includegraphics[height = 0.5\textheight]{train_nnet_tuneGrid}
-\end{figure} 
-\end{frame} 
 
 
 
