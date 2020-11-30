@@ -167,6 +167,17 @@ m0 <- train(time ~ .,
 
 \end{frame} 
 
+
+
+\begin{frame}
+\frametitle{Any questions?}
+
+(This slide will occur many times in this slidedeck.
+
+\end{frame} 
+
+
+
 \begin{frame}
 \frametitle{Look at learned model}
 \vspace{-4mm}
@@ -212,6 +223,14 @@ Classification or regression.
 \item Full ML workflow
 \item Excellent documentation
 \end{itemize}
+
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{Any questions?}
+
 
 \end{frame} 
 
@@ -286,6 +305,12 @@ m2 <- train(time ~ .,
 
 
 
+\begin{frame}
+\frametitle{Any questions?}
+
+
+\end{frame} 
+
 
 
 
@@ -329,6 +354,12 @@ pl2 <- train(r ~ 0 + I(m1 * m2 / d ^ 2),
 
 
 
+\begin{frame}
+\frametitle{Any questions?}
+
+
+\end{frame} 
+
 
 
 \begin{frame}[fragile]
@@ -354,25 +385,57 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{Maxdepth hyperparameter/tuning parameter}
-\vspace{-4mm}
-\begin{figure}
-    \includegraphics[width = 0.5\textwidth]{rpart_tree.pdf}
-\end{figure} 
+\frametitle{Any questions?}
+
 
 \end{frame} 
 
 
 
 \begin{frame}
-\frametitle{Tune maxdepth parameter with oos performance}
+\frametitle{Maxdepth parameter}
 \vspace{-4mm}
 \begin{figure}
-    \includegraphics[width = 0.5\textwidth]{rpart_perf.pdf}
+    \includegraphics[width = 0.5\textwidth]{rpart_depth6.pdf}
 \end{figure} 
 
 \end{frame} 
 
+
+
+
+\begin{frame}
+\frametitle{Regularisation: forcing a model to be simpler}
+\vspace{-4mm}
+\begin{figure}
+    \includegraphics[width = 0.5\textwidth]{rpart_depth3.pdf}
+\end{figure} 
+\end{frame} 
+
+
+
+
+
+\begin{frame}
+\frametitle{How do we choose? Out-of-sample performance.}
+\vspace{-4mm}
+\begin{figure}
+    \includegraphics[width = 0.45\textwidth]{rpart_perf.pdf}
+\end{figure} 
+
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{Other tuning parameters.}
+\begin{itemize}
+\item Stepwise regression cutoff.
+\item Degree if freedom in GAM
+\item Length scale in Gaussian Process
+\item Variance of zero-mean Bayesian prior
+\end{itemize}
+
+\end{frame} 
 
 
 \begin{frame}
@@ -387,15 +450,21 @@ m1 <- train(time ~ .,
 
 \begin{frame}
 \frametitle{Overfitting and bias/variance.}
-\vspace{-4mm}
+
 \begin{figure}
-    \includegraphics[width = 0.5\textwidth]{overfit.pdf}
+    \includegraphics[height = 0.8\textheight]{bias-variance.png}
 \end{figure} 
 
 \end{frame} 
 
 
 
+
+\begin{frame}
+\frametitle{Any questions?}
+
+
+\end{frame} 
 
 
 \begin{frame}[fragile]
@@ -463,23 +532,28 @@ m1 <- train(time ~ .,
 \end{frame} 
 
 
+
+
 \begin{frame}
 \frametitle{How noisy is performance?}
 \vspace{-4mm}
 \begin{figure}
-    \includegraphics[width = 0.5\textwidth]{rpart_perf.pdf}
+    \includegraphics[width = 0.45\textwidth]{rpart_perf.pdf}
 \end{figure} 
 \end{frame} 
 
 
-\begin{frame}
-\frametitle{Regularisation}
 
-\begin{itemize}
-\item The process of forcing a model to be simpler to avoid overfitting.
-\item Regularisation parameters.
-\end{itemize}
+
+
+
+\begin{frame}
+\frametitle{Any questions?}
+
+
 \end{frame} 
+
+
 
 
 \begin{frame}
@@ -488,7 +562,7 @@ m1 <- train(time ~ .,
 \begin{itemize}
 \item Match error metric to question.
 \item Aim for interpretability.
-\item MAE, R^2
+\item MAE, $R^2$
 \item RMSE, correlation are less interpretable
 \item Correlation isn't quite measuring what you think.
 \end{itemize}
@@ -520,6 +594,14 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
+\frametitle{Any questions?}
+
+
+\end{frame} 
+
+
+
+\begin{frame}
 \frametitle{No free lunch}
 No such thing as a universal, `best' machine learning model.
 \end{frame} 
@@ -527,48 +609,211 @@ No such thing as a universal, `best' machine learning model.
 
 
 
+	
+
+\begin{frame}[fragile]
+\frametitle{Fuller ML workflow}
+\begin{Verbatim}
+
+# Carefully think about hold out data
+tr2 <- trainControl(
+        method = 'repeatedcv',
+        repeats = 3,
+        number = 5)
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+\begin{frame}[fragile]
+\frametitle{Fuller ML workflow}
+\begin{Verbatim}
+
+# Carefully choose a metric
+my_metric <- 'MAE'
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+\begin{frame}[fragile]
+\frametitle{Fuller ML workflow}
+\begin{Verbatim}
+
+# Baseline linear model
+m1 <- train(time ~ ., 
+            data = melanoma,
+            method = 'enet',
+            tuneLength = 10,
+            metric = my_metric,
+            trControl = tr2)
+
+
+# Look at scatter plots for regression
+plotCV(m1)
+
+\end{Verbatim}
+
+\end{frame} 
 
 
 
+\begin{frame}[fragile]
+\frametitle{Fuller ML workflow}
+\begin{Verbatim}
+
+# Projection pursuit is very fast but nonlinear.
+#   Another good baseline.
+m2 <- train(time ~ ., 
+            data = melanoma,
+            method = 'ppr',
+            tuneLength = 10,
+            metric = my_metric,
+            trControl = tr2)
+
+
+# Look at scatter plots for regression
+plotCV(m2)
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+\begin{frame}[fragile]
+\frametitle{Fuller ML workflow}
+\begin{Verbatim}
+
+# Random Forest often peforms well
+m3 <- train(time ~ ., 
+            data = melanoma,
+            method = 'ranger',
+            tuneLength = 10,
+            metric = my_metric,
+            trControl = tr2)
+
+
+# Look at scatter plots for regression
+plotCV(m3)
+\end{Verbatim}
+
+\end{frame} 
+
+
+\begin{frame}[fragile]
+\frametitle{Fuller ML workflow}
+\begin{Verbatim}
+
+# Consider more complicated models.
+m4 <- train(time ~ ., 
+            data = melanoma,
+            method = 'xgbTree',
+            tuneLength = 10,
+            metric = my_metric,
+            trControl = tr2)
+
+\end{Verbatim}
+
+\end{frame} 
 
 
 
+\begin{frame}
+\frametitle{Any questions?}
 
 
-
- 
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
+\end{frame} 
 
 
 
 
 
 \begin{frame}
-\frametitle{Other packages}
-\begin{itemize}
-\item mlr
-\item mlr3
-\item tidymodels
-\end{itemize}
+\frametitle{What is a RandomForest?}
 
+\begin{itemize}
+\item Instead of 1 tree, fit many trees and take average prediction.
+\item For each tree take a random bootstrap of the data.
+\item For each node consider a random subset of covariates.
+	\begin{itemize}
+	\item Consider mtry covariates. Tuning parameter.
+	\end{itemize}
+\item These both help prevent overfitting.
+\end{itemize}
 \end{frame} 
 
 
-    
+\begin{frame}
+\frametitle{What is a Neural Network?}
+
+\vspace{6mm}
+\begin{figure}
+    \includegraphics[height = 0.7\textheight]{neural_network.pdf}
+\end{figure} 
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{What is a Neural Network? Little GLMs.}
+
+\vspace{6mm}
+\begin{figure}
+    \includegraphics[height = 0.7\textheight]{neural_network2.pdf}
+\end{figure} 
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{What is a Neural Network? Little GLMs.}
+
+\vspace{6mm}
+\begin{figure}
+    \includegraphics[height = 0.7\textheight]{neural_network3.pdf}
+\end{figure} 
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{What is a Neural Network?}
+
+\begin{itemize}
+\item Optimise the parameters but there are lots of local optima.
+\item What ``architecture''?
+	\begin{itemize}
+	\item Hidden units.
+	\item Extra hidden layers
+	\item Everything connected to everything else?
+	\end{itemize}
+\end{itemize}
+\end{frame} 
+
+
+
+
+\begin{frame}
+\frametitle{Extra reading}
+
+\begin{itemize}
+\item Breiman 2001 Statistical Modeling: The Two Cultures.
+\item Molnar 2020 Interpretable Machine Learning: A Guide for Making Black Box Models Explainable.
+\item Kuhn 2013 Applied Predictive Modeling.
+\item Lucas 2020 A translucent box: interpretable machine learning in ecology.
+\end{itemize}
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{No free lunch}
+No such thing as a universal, `best' machine learning model.
+\end{frame} 
+
+
+
+
 \begin{frame}
 
 \frametitle{Please ask me some questions}
