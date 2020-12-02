@@ -27,7 +27,6 @@
 \institute{\includegraphics[height=0.7cm]{Imperial_1_Pantone_solid.eps}}
 
 
-
 % -----------------------------------------------------------------------------
 
 \setbeamertemplate{itemize items}[triangle]
@@ -110,58 +109,64 @@
 %18 no free lunch. try lots of models
 
 
+
+% todo
+% tunegrid?
+% caret website
+% caret basics. Classification vs regression?
+
+
 \begin{frame}
-\frametitle{What is machine learning?}
+\frametitle{\insertframenumber~What is machine learning?}
 \begin{itemize}
-\item Focus on prediction
-\item Not mechanistic/process based models
+\item Focus on prediction.
+\item Not mechanistic/process based models.
 \item Not inference of real-world parameters.
 \end{itemize}
 \end{frame} 
 
 
 \begin{frame}
-\frametitle{What is machine learning?}
-\begin{enumerate}
-\item Parametric, statistical 
+\frametitle{\insertframenumber~What is machine learning?}
+
 \begin{itemize}
-\item Linear regression, LASSO.
+\item An analytical aim, rather than a group of models.
+\item Linear regression is machine learning if you mostly care about prediction!
+\item Also LASSO, Neural networks, decision trees, random forest.
 \end{itemize}
 
-\item Nonparametric, statistical.
-\begin{itemize}
-\item Gaussian processes, splines.
-\end{itemize}
-\item Nonparametric, nonstatistical.
-\begin{itemize}
-\item Neural networks, decision trees, random forest.
-\end{itemize}
-\end{enumerate}
 \end{frame} 
 
 \begin{frame}[fragile]
-\frametitle{Let's do Machine Learning: Data}
-Time until death data
+\frametitle{\insertframenumber~Let's do Machine Learning: Data}
+Time until death data. See script.
 \begin{Verbatim}
 
 data(melanoma, package = "boot")
-
 head(melanoma)
 
-featurePlot(melanoma[, -1], 
-                     melanoma$time)
+# Remove year and discuss censoring.
+melanoma <- melanoma[, -5]
+
+# Overview of data.
+featurePlot(melanoma[, -1], y = melanoma$time)
 
 \end{Verbatim}
 
 \end{frame} 
 
 \begin{frame}[fragile]
-\frametitle{ Let's do Machine Learning: Training a model}
+\frametitle{\insertframenumber~ Let's do Machine Learning: Training a model}
 \begin{Verbatim}
+
+library(caret)
 
 m0 <- train(time ~ ., 
             data = melanoma,
             method = 'rpart2')
+            
+names(m0)
+print(m0)
 
 \end{Verbatim}
 
@@ -170,16 +175,16 @@ m0 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{Any questions?}
+\frametitle{\insertframenumber~Any questions?}
 
-(This slide will occur many times in this slidedeck.
+(This slide will occur many times in this slidedeck.)
 
 \end{frame} 
 
 
 
 \begin{frame}
-\frametitle{Look at learned model}
+\frametitle{\insertframenumber~What is machine learning? look at learned model.}
 \vspace{-4mm}
 \begin{figure}
     \includegraphics[width = 0.5\textwidth]{rpart_tree.pdf}
@@ -190,7 +195,7 @@ m0 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{Look at learned model}
+\frametitle{\insertframenumber~What is machine learning? look at learned model.}
 \vspace{2mm}
 \begin{figure}
     \includegraphics[width = 0.6\textwidth]{rpart_annotate.pdf}
@@ -202,43 +207,13 @@ m0 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{What is machine learning?}
-Supervised learning.
-
-Classification or regression.
-\begin{figure}
-    \includegraphics[width = 0.5\textwidth]{classification}%
-    \includegraphics[width = 0.5\textwidth]{regression}
-\end{figure} 
-
-\end{frame} 
-
-
-\begin{frame}
-\frametitle{Caret package}
+\frametitle{\insertframenumber~What is machine learning?}
+Tasks:
 \begin{itemize}
-\item https://topepo.github.io/caret/model-training-and-tuning.html
-\item Unified interface to hundreds of models
 \item Supervised learning
-\item Full ML workflow
-\item Excellent documentation
-\end{itemize}
-
-\end{frame} 
-
-
-
-\begin{frame}
-\frametitle{Any questions?}
-
-
-\end{frame} 
-
-
-\begin{frame}
-\frametitle{What is machine learning?}
-Other tasks:
 \begin{itemize}
+\item Covariates and response data. Like most biological models.
+\end{itemize}
 \item Reinforcement learning
 \begin{itemize}
 \item Make your own data.
@@ -252,6 +227,40 @@ Other tasks:
 
 
 
+\begin{frame}
+\frametitle{\insertframenumber~What is machine learning?}
+Supervised learning.
+
+Classification or regression.
+\begin{figure}
+    \includegraphics[width = 0.5\textwidth]{classification}%
+    \includegraphics[width = 0.5\textwidth]{regression}
+\end{figure} 
+
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Caret package}
+\begin{itemize}
+\item https://topepo.github.io/caret/model-training-and-tuning.html
+\item Unified interface to hundreds of models
+\item Supervised learning
+\item Full ML workflow
+\item Excellent documentation
+\end{itemize}
+
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Any questions?}
+
+
+\end{frame} 
+
+
 
 
 
@@ -261,7 +270,7 @@ Other tasks:
 
 
 \begin{frame}[fragile]
-\frametitle{What is ML good at? Predicting new data.}
+\frametitle{\insertframenumber~What is ML good at? Predicting new data.}
 \renewcommand{\FancyVerbFormatLine}[1]{%
    \ifnum\value{FancyVerbLine}=8\color{cyan}#1%
    \else #1\fi}
@@ -285,7 +294,7 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}[fragile]
-\frametitle{What is ML good at?}
+\frametitle{\insertframenumber~What is ML good at?}
 \renewcommand{\FancyVerbFormatLine}[1]{%
    \ifnum\value{FancyVerbLine}=7\color{cyan}#1%
    \else #1\fi}
@@ -306,16 +315,19 @@ m2 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{Any questions?}
+\frametitle{\insertframenumber~Which was better? Any questions?}
 
-
+\begin{itemize}
+\item Thumbs up: rpart2.
+\item Smiley face: lm.
+\end{itemize}
 \end{frame} 
 
 
 
 
 \begin{frame}[fragile]
-\frametitle{What is ML bad at?}
+\frametitle{\insertframenumber~What is ML bad at?}
 \renewcommand{\FancyVerbFormatLine}[1]{%
    \ifnum\value{FancyVerbLine}=1\color{cyan}#1%
    \else #1\fi}
@@ -335,7 +347,7 @@ pl1 <- train(g ~ .,
 
 
 \begin{frame}[fragile]
-\frametitle{What is ML bad at?}
+\frametitle{\insertframenumber~What is ML bad at?}
 \renewcommand{\FancyVerbFormatLine}[1]{%
    \ifnum\value{FancyVerbLine}=1\color{cyan}#1%
    \else #1\fi}
@@ -355,15 +367,22 @@ pl2 <- train(r ~ 0 + I(m1 * m2 / d ^ 2),
 
 
 \begin{frame}
-\frametitle{Any questions?}
+\frametitle{\insertframenumber~Which was better? Any questions?}
 
-
+\begin{itemize}
+\item Thumbs up: rf.
+\item Smiley face: lm.
+\end{itemize}
 \end{frame} 
 
 
 
+
+
+
+
 \begin{frame}[fragile]
-\frametitle{Basic ML workflow}
+\frametitle{\insertframenumber~Basic ML workflow}
 \begin{Verbatim}
 tr2 <- trainControl(
         method = 'repeatedcv',
@@ -384,16 +403,9 @@ m1 <- train(time ~ .,
 
 
 
-\begin{frame}
-\frametitle{Any questions?}
-
-
-\end{frame} 
-
-
 
 \begin{frame}
-\frametitle{Maxdepth parameter}
+\frametitle{\insertframenumber~Maxdepth parameter}
 \vspace{-4mm}
 \begin{figure}
     \includegraphics[width = 0.5\textwidth]{rpart_depth6.pdf}
@@ -405,7 +417,7 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{Regularisation: forcing a model to be simpler}
+\frametitle{\insertframenumber~Regularisation: forcing a model to be simpler}
 \vspace{-4mm}
 \begin{figure}
     \includegraphics[width = 0.5\textwidth]{rpart_depth3.pdf}
@@ -417,8 +429,8 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{How do we choose? Out-of-sample performance.}
-\vspace{-4mm}
+\frametitle{\insertframenumber~How do we choose? Out-of-sample performance.}
+\vspace{-2mm}
 \begin{figure}
     \includegraphics[width = 0.45\textwidth]{rpart_perf.pdf}
 \end{figure} 
@@ -427,19 +439,19 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{Other tuning parameters.}
+\frametitle{\insertframenumber~Other tuning parameters.}
 \begin{itemize}
 \item Stepwise regression cutoff.
-\item Degree if freedom in GAM
-\item Length scale in Gaussian Process
-\item Variance of zero-mean Bayesian prior
+\item Degree of freedom in GAM.
+\item Length scale in Gaussian Process.
+\item Variance of zero-mean Bayesian prior.
 \end{itemize}
 
 \end{frame} 
 
 
 \begin{frame}
-\frametitle{Why does performance decrease  with model complexity?}
+\frametitle{\insertframenumber~Why does performance decrease  with model complexity?}
 \vspace{-4mm}
 \begin{figure}
     \includegraphics[width = 0.5\textwidth]{rpart_perf.pdf}
@@ -449,7 +461,7 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{Overfitting and bias/variance.}
+\frametitle{\insertframenumber~Overfitting and bias/variance.}
 
 \begin{figure}
     \includegraphics[height = 0.8\textheight]{bias-variance.png}
@@ -461,14 +473,14 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{Any questions?}
+\frametitle{\insertframenumber~Any questions?}
 
 
 \end{frame} 
 
 
 \begin{frame}[fragile]
-\frametitle{Crossvalidation}
+\frametitle{\insertframenumber~Crossvalidation}
 \begin{Verbatim}
 tr2 <- trainControl(
         method = 'repeatedcv',
@@ -490,7 +502,7 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{Crossvalidation}
+\frametitle{\insertframenumber~Crossvalidation}
 
 \begin{itemize}
 \item k-fold
@@ -509,7 +521,7 @@ m1 <- train(time ~ .,
 \end{frame} 
 
 \begin{frame}
-\frametitle{Crossvalidation}
+\frametitle{\insertframenumber~Crossvalidation}
 
 \begin{itemize}
 \item Spatial
@@ -521,12 +533,12 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{Outer Crossvalidation}
+\frametitle{\insertframenumber~Outer Crossvalidation}
 
 \begin{itemize}
 \item Selecting a model \emph{is part of the model}.
 \item If we consider many models, taking the best one is a form of overfitting
-\item Outer cross-validation of this is part of primary research question.
+\item Outer cross-validation if this is part of primary research question.
 \item Unfortunately not implemented in caret. Must do it manually.
 \end{itemize}
 \end{frame} 
@@ -534,21 +546,10 @@ m1 <- train(time ~ .,
 
 
 
-\begin{frame}
-\frametitle{How noisy is performance?}
-\vspace{-4mm}
-\begin{figure}
-    \includegraphics[width = 0.45\textwidth]{rpart_perf.pdf}
-\end{figure} 
-\end{frame} 
-
-
-
-
 
 
 \begin{frame}
-\frametitle{Any questions?}
+\frametitle{\insertframenumber~Any questions?}
 
 
 \end{frame} 
@@ -557,7 +558,7 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{Error metrics: regression}
+\frametitle{\insertframenumber~Error metrics: regression}
 
 \begin{itemize}
 \item Match error metric to question.
@@ -570,31 +571,31 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{Error metrics: regression}
-\begin{figure}
-    \includegraphics[width = 0.8\textwidth]{corr_mae.pdf}
-\end{figure} 
-
-\end{frame} 
-
-
-
-\begin{frame}
-\frametitle{Error metrics: classification}
+\frametitle{\insertframenumber~Error metrics: classification}
 
 \begin{itemize}
 \item Match error metric to question.
 \item Aim for interpretability.
 \item Class balance. Model that never predicts rare class will have high accuracy.
+\item I can predict COVID infection with $\sim$97\% accuracy by saying noone has COVID. 
 \item Kappa, AUC.
-\item 
+\item Accuracy does *not* account for imbalance.
 \end{itemize}
 \end{frame} 
 
 
 
 \begin{frame}
-\frametitle{Any questions?}
+\frametitle{\insertframenumber~Error metrics are really important.}
+
+    \includegraphics[width = 0.45\textwidth]{rpart_acc.pdf}%
+    \includegraphics[width = 0.45\textwidth]{rpart_kappa.pdf}
+
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Any questions?}
 
 
 \end{frame} 
@@ -602,20 +603,23 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{No free lunch}
-No such thing as a universal, `best' machine learning model.
+\frametitle{\insertframenumber~No free lunch}
+\begin{itemize}
+\item No such thing as a universal, `best' machine learning model.
+\item For any model, there exists a dataset for which that model is the best.
+\end{itemize}
+
 \end{frame} 
 
 
 
 
-	
-
 \begin{frame}[fragile]
-\frametitle{Fuller ML workflow}
+\frametitle{\insertframenumber~Fuller ML workflow}
 \begin{Verbatim}
 
 # Carefully think about hold out data
+# This is THE most important part.
 tr2 <- trainControl(
         method = 'repeatedcv',
         repeats = 3,
@@ -627,7 +631,7 @@ tr2 <- trainControl(
 
 
 \begin{frame}[fragile]
-\frametitle{Fuller ML workflow}
+\frametitle{\insertframenumber~Fuller ML workflow}
 \begin{Verbatim}
 
 # Carefully choose a metric
@@ -637,9 +641,28 @@ my_metric <- 'MAE'
 
 \end{frame} 
 
+	
 
 \begin{frame}[fragile]
-\frametitle{Fuller ML workflow}
+\frametitle{\insertframenumber~Fuller ML workflow}
+\begin{Verbatim}
+
+# Collect data.
+# Make new covariates. GDP growth, sum of air pollution last week.
+# Covariates are more important than algorithms.
+
+# Log, sqrt, sqaured for linear models.
+# Tree models focus on combining covariates.
+
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~Fuller ML workflow}
 \begin{Verbatim}
 
 # Baseline linear model
@@ -652,6 +675,7 @@ m1 <- train(time ~ .,
 
 
 # Look at scatter plots for regression
+# Look at confusion matrix for classification
 plotCV(m1)
 
 \end{Verbatim}
@@ -661,10 +685,10 @@ plotCV(m1)
 
 
 \begin{frame}[fragile]
-\frametitle{Fuller ML workflow}
+\frametitle{\insertframenumber~Fuller ML workflow}
 \begin{Verbatim}
 
-# Projection pursuit is very fast but nonlinear.
+# Projection pursuit regression is very fast but nonlinear.
 #   Another good baseline.
 m2 <- train(time ~ ., 
             data = melanoma,
@@ -683,17 +707,17 @@ plotCV(m2)
 
 
 \begin{frame}[fragile]
-\frametitle{Fuller ML workflow}
+\frametitle{\insertframenumber~Fuller ML workflow}
 \begin{Verbatim}
 
-# Random Forest often peforms well
+# Random Forest often peforms very well.
+# Easy to tune. Another excellent baseline.
 m3 <- train(time ~ ., 
             data = melanoma,
             method = 'ranger',
             tuneLength = 10,
             metric = my_metric,
             trControl = tr2)
-
 
 # Look at scatter plots for regression
 plotCV(m3)
@@ -703,10 +727,10 @@ plotCV(m3)
 
 
 \begin{frame}[fragile]
-\frametitle{Fuller ML workflow}
+\frametitle{\insertframenumber~Fuller ML workflow}
 \begin{Verbatim}
 
-# Consider more complicated models.
+# Try a few models. No free lunch.
 m4 <- train(time ~ ., 
             data = melanoma,
             method = 'xgbTree',
@@ -719,9 +743,30 @@ m4 <- train(time ~ .,
 \end{frame} 
 
 
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~Fuller ML workflow}
+\begin{Verbatim}
+
+# Try a few models. No free lunch.
+m4 <- train(time ~ ., 
+            data = melanoma,
+            method = 'nnet',
+            tuneLength = 10,
+            metric = my_metric,
+            linout = TRUE,
+            trControl = tr2)
+
+# Neural networks need linout = TRUE for regression.
+# linear output as apposed to logit/probit.
+
+\end{Verbatim}
+
+\end{frame} 
+
+
 
 \begin{frame}
-\frametitle{Any questions?}
+\frametitle{\insertframenumber~Any questions?}
 
 
 \end{frame} 
@@ -731,7 +776,7 @@ m4 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{What is a RandomForest?}
+\frametitle{\insertframenumber~What is a RandomForest?}
 
 \begin{itemize}
 \item Instead of 1 tree, fit many trees and take average prediction.
@@ -746,7 +791,7 @@ m4 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{What is a Neural Network?}
+\frametitle{\insertframenumber~What is a Neural Network?}
 
 \vspace{6mm}
 \begin{figure}
@@ -756,7 +801,7 @@ m4 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{What is a Neural Network? Little GLMs.}
+\frametitle{\insertframenumber~What is a Neural Network? Little GLMs.}
 
 \vspace{6mm}
 \begin{figure}
@@ -766,7 +811,7 @@ m4 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{What is a Neural Network? Little GLMs.}
+\frametitle{\insertframenumber~What is a Neural Network? Little GLMs.}
 
 \vspace{6mm}
 \begin{figure}
@@ -777,7 +822,7 @@ m4 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{What is a Neural Network?}
+\frametitle{\insertframenumber~What is a Neural Network?}
 
 \begin{itemize}
 \item Optimise the parameters but there are lots of local optima.
@@ -791,10 +836,43 @@ m4 <- train(time ~ .,
 \end{frame} 
 
 
+\begin{frame}
+\frametitle{\insertframenumber~Caret documentation}
+
+\begin{itemize}
+\item https://topepo.github.io/caret/index.html
+\item Really excellent!
+\item Model list with tuning parameters.
+\item Models by tag (data weights, tree-based, implicit feature selection).
+\end{itemize}
+\end{frame} 
 
 
 \begin{frame}
-\frametitle{Extra reading}
+\frametitle{\insertframenumber~Other packages}
+
+\begin{itemize}
+\item mlr3
+	\begin{itemize}
+	\item I find it more complicated. 
+	\item Probably better for very complicated pipelines.
+	\end{itemize}
+\item tidymodels
+	\begin{itemize}
+	\item Fits into tidyverse.
+	\item More complicated.
+	\item Not yet feature complete.
+	\end{itemize}
+\item scikit.learn in Python
+\item caretEnsemble for ensembles/model averaging.
+\end{itemize}
+\end{frame} 
+
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Extra reading}
 
 \begin{itemize}
 \item Breiman 2001 Statistical Modeling: The Two Cultures.
@@ -806,17 +884,10 @@ m4 <- train(time ~ .,
 
 
 
-\begin{frame}
-\frametitle{No free lunch}
-No such thing as a universal, `best' machine learning model.
-\end{frame} 
-
-
-
 
 \begin{frame}
 
-\frametitle{Please ask me some questions}
+\frametitle{\insertframenumber~Any questions?}
 
 \vspace{5mm}
 
@@ -825,7 +896,7 @@ No such thing as a universal, `best' machine learning model.
 
 \includegraphics[height=7pt]{Ar_Icon_Contact.pdf} tlucas{\footnotesize{@}}ic.ac.uk
 
-\includegraphics[height=7pt]{Twitter_logo_blue-small.png} {\footnotesize{@}}statsforbios
+\includegraphics[height=7pt]{Twitter_logo_blue-small.png} {\footnotesize{@}}StatsForBios
 
 \vspace{2cm}
 \hfill % pushes logo the right
@@ -837,6 +908,7 @@ No such thing as a universal, `best' machine learning model.
 %thanks
 
 
+ 
  
 \end{document}
 
