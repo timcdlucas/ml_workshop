@@ -1,9 +1,10 @@
+# Slide 4
+
 library(boot)
 library(ggplot2)
-library(caret)
-
 library(pdp)
 library(rpart.plot)
+
 
 # Followed until 1977.
 # So censoring that I will ignore.
@@ -13,27 +14,48 @@ head(melanoma)
 dim(melanoma)
 
 # Remove year variable.
+# Due to the censoring this variable
+# is very highly correlated to death time.
 melanoma <- melanoma[, -5]
 
+# Quick look at the data
 featurePlot(melanoma[, -1], melanoma$time)
+hist(melanoma$time)
 
 
+# Slide 5.
+library(caret)
 
 m0 <- train(time ~ ., 
             data = melanoma,
             method = 'rpart2')
+
+# It is quite a complicated object.
 names(m0)
+
+# Quick summary.
 print(m0)
 
 
 
+# Slide 7
+rpart.plot(m0$finalModel)
 
 
-
+# Slide 13
+# Set up our out-of-sample validation.
+# Leave group out cross validation.
+# Hold out 75% of the data.
+# Save preditions so we can plot observed vs fitted.
 tr1 <- trainControl(
         method = 'LGOCV',
+        p = 0.25,
         number = 1,
         savePredictions = TRUE)
+
+# By default the random split is done in train()
+# So we use the same seed for both models.
+# See the index argument of trainControl() for alternative.
 set.seed(1312)
 m1 <- train(time ~ ., 
             data = melanoma,
@@ -41,9 +63,6 @@ m1 <- train(time ~ .,
             trControl = tr1)
 m1
 
-pdf('rpart_tree.pdf')
-rpart.plot(m1$finalModel)
-dev.off()
 
 set.seed(1312)
 m2 <- train(time ~ ., 
@@ -103,7 +122,7 @@ plotCV(m1, smooth = FALSE)
 
 
 
-
+# Slide 16
 pl <- read.csv(
   file = 'https://raw.githubusercontent.com/timcdlucas/ml_workshop/master/planets.csv')
 
@@ -119,27 +138,21 @@ pl2 <- train(g ~ 0 + I(m1 * m2 / d ^ 2),
             method = 'lm',
             trControl = tr1)
             
-plotCV(pl1, smooth = FALSE) + scale_y_log10() + scale_x_log10()
-plotCV(pl2, smooth = FALSE) + scale_y_log10() + scale_x_log10()
+plotCV(pl1, smooth = FALSE, print = FALSE) + scale_y_log10() + scale_x_log10()
+plotCV(pl2, smooth = FALSE, print = FALSE) + scale_y_log10() + scale_x_log10()
 
 
 
 
-
-
-
-
-
-
-
-# Full workflow.
-
+# Slide 19
 
 tr2 <- trainControl(
         method = 'repeatedcv',
-        number = 10,
-        repeats = 5, 
+        number = 5,
+        repeats = 3, 
         savePredictions = TRUE)
+
+
 set.seed(1312)
 m1 <- train(time ~ ., 
             data = melanoma,
@@ -150,17 +163,117 @@ m1 <- train(time ~ .,
 m1
 
 plotCV(m1)
-ggsave('rpart2_scatter.pdf')
 
-pdf('rpart_perf.pdf')
+# Slide 22
 plot(m1)
-dev.off()
 
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+# Slide 37
+
+tr2 <- trainControl(
+        method = 'repeatedcv',
+        number = 5,
+        repeats = 3, 
+        savePredictions = TRUE)
+
+# Slide 37
+my_metric <- 'MAE'
+
+
+
+# Slide 40
+
+# A good benchmark
+set.seed(131210)
+m1 <- train(time ~ .,
+            data = melanoma,
+            method = 'enet',
+            tuneLength = 10,
+            metric = my_metric,
+            trControl = tr2)
+
+plotCV(m1)
+
+
+
+# Slide 41
+
+# A good benchmark
+set.seed(131210)
+m2 <- train(time ~ .,
+            data = melanoma,
+            method = 'ppr',
+            tuneLength = 10,
+            metric = my_metric,
+            trControl = tr2)
+
+plotCV(m2)
+
+
+
+
+
+# Slide 42
+
+# A good benchmark
+set.seed(131210)
+m3 <- train(time ~ .,
+            data = melanoma,
+            method = 'ranger',
+            tuneLength = 5,
+            metric = my_metric,
+            trControl = tr2)
+
+plotCV(m3)
+
+
+
+
+# Slide 43
+
+# Try a few models. No free lunch.
+# This one is slower. 
+# xgboost has lots of parameters.
+# So probably use grid search instead.
+set.seed(131210)
+m4 <- train(time ~ .,
+            data = melanoma,
+            method = 'xgbTree',
+            tuneLength = 1, 
+            metric = my_metric,
+            trControl = tr2)
+
+plotCV(m4)
+
+
+
+
+# Slide 44
+
+# A little bit slow.
+set.seed(131210)
+m5 <- train(time ~ .,
+            data = melanoma,
+            method = 'nnet',
+            tuneLength = 10, 
+            linout = TRUE,
+            metric = my_metric,
+            trControl = tr2)
+
+plotCV(m5)
 
 
 
@@ -208,38 +321,9 @@ dev.off()
 
 
 
-set.seed(1312)
-m4 <- train(time ~ ., 
-            data = melanoma,
-            method = 'rpart2',
-            tuneGrid = data.frame(maxdepth = 30),
-            trControl = tr)
-m4        
 
 
-pdf('rpart_1.pdf')
-pdp::partial(m4, 
-        pred.var = c('thickness'),
-        plot = TRUE)
-dev.off()
-
-set.seed(1312)
-m4b <- train(time ~ ., 
-            data = melanoma,
-            method = 'rpart2',
-            tuneGrid = data.frame(maxdepth = 4),
-            trControl = tr)
-m4b        
-
-pdf('rpart_2.pdf')
-
-pdp::partial(m4b, 
-        pred.var = c('thickness'),
-        plot = TRUE)
-dev.off()
-
-
-
+# Slide 34
 d <- diamonds[, -1]
 
 set.seed(1020)
@@ -267,8 +351,5 @@ c2$bestTune
 pdf('rpart_kappa.pdf')
 plot(c2)
 dev.off()
-
-# Are predictions the same between the two
-table(best_tune_preds(c2)$pred == best_tune_preds(c1)$pred)
 
 confusionMatrix(c2)
