@@ -59,8 +59,20 @@
 }
 
 
+% todo
+% More pictures.
 
-%plan:
+
+% new plan:
+
+% overview of analysis and explain each bit.
+%   Straight in and do ML.
+% What is ML and what is it good for without code.
+
+
+
+
+
 
 %1 what is ml 
 %what models count
@@ -114,44 +126,142 @@
 
 
 
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~Machine Learning Workshop: Workflow overview.}
+
+\vspace{2mm}
+\begin{Verbatim}
+tr1 <- trainControl(
+         method = 'LGOCV',        # Hold out data for testing
+         p = 0.75,
+         number = 1,
+         savePredictions = TRUE)
+
+m1 <-  train(
+	 time ~ .,                # Define response and covariates
+         data = melanoma,         # Select the data
+         method = 'rpart2',       # Choose a model
+         tuneLength = 3,          # Setup fine tuning
+         metric = 'MAE',          # Define what counts as `good'
+         trControl = tr1)
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Workshop structure}
+\begin{enumerate}
+\item Overview of machine learning workflow/single analysis.
+\item Describe data and run basic analysis.
+\item What is machine learning?
+\item Detailed description of each stage in the analysis.
+\item More information on caret.
+\item Some models don't handle NAs. Error messages not always very useful.
+\item What is machine learning bad at?.
+\item Final details.
+\end{enumerate}
+
+\end{frame} 
+
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~Let's do Machine Learning: Data}
+Time until death data. See script.
+\begin{Verbatim}
+
+data(melanoma, package = "boot")
+head(melanoma)
+
+# Remove year and discuss censoring.
+melanoma <- melanoma[, -5]
+
+# Overview of data.
+featurePlot(melanoma[, -1], y = melanoma$time)
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~ Let's do Machine Learning: Basic analysis}
+
+\vspace{2mm}
+\begin{Verbatim}
+tr1 <- trainControl(
+         method = 'LGOCV',        # Hold out data for testing
+         p = 0.75,
+         number = 1,
+         savePredictions = TRUE)
+
+m1 <-  train(
+	 time ~ .,                # Define response and covariates
+         data = melanoma,         # Select the data
+         method = 'rpart2',       # Choose a model
+         tuneLength = 3,          # Setup fine tuning
+         metric = 'MAE',          # Define what counts as `good'
+         trControl = tr1)
+
+\end{Verbatim}
+
+\end{frame} 
+
 
 
 
 
 
 \begin{frame}[fragile]
-\frametitle{\insertframenumber~Overview}
 
-\begin{columns}
-\begin{column}{0.4\textwidth}
-   \begin{enumerate}
-   \item Hold out data for testing \vspace{18mm}
-   \item Choose a model\vspace{-1mm}
-   \item Setup fine tuning \vspace{-1mm}
-   \item Define what counts as `good'
-   \end{enumerate}
-\end{column}
-\begin{column}{0.45\textwidth}  
+\small
 \begin{Verbatim}
-tr1 <- trainControl(
-        method = 'LGOCV',
-        p = 0.75,
-        savePredictions = TRUE)
+CART 
 
-m1 <- train(time ~ ., 
-            data = melanoma,
-            method = 'rpart2',
-            tuneLength = 10,
-            metric = 'MAE',
-            trControl = tr2)
+205 samples
+  5 predictor
+
+No pre-processing
+Resampling: Repeated Train/Test Splits Estimated (1 reps, 75%) 
+Summary of sample sizes: 156 
+Resampling results across tuning parameters:
+
+  maxdepth  RMSE      Rsquared   MAE     
+  1         890.3811  0.2915851  697.8748
+  2         856.7927  0.3493889  687.3165
+  3         831.3940  0.3999163  645.2901
+
+MAE was used to select the optimal model using the smallest value.
+The final value used for the model was maxdepth = 3.
 
 \end{Verbatim}
 
-\end{column}
-\end{columns}
+\end{frame} 
 
+
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Any questions?}
+
+(This slide will occur many times in this slidedeck.)
 
 \end{frame} 
+
+
+
+
+
+
+
+
 
 
 
@@ -181,99 +291,6 @@ m1 <- train(time ~ .,
 \end{itemize}
 
 \end{frame} 
-
-\begin{frame}[fragile]
-\frametitle{\insertframenumber~Let's do Machine Learning: Data}
-Time until death data. See script.
-\begin{Verbatim}
-
-data(melanoma, package = "boot")
-head(melanoma)
-
-# Remove year and discuss censoring.
-melanoma <- melanoma[, -5]
-
-# Overview of data.
-featurePlot(melanoma[, -1], y = melanoma$time)
-
-\end{Verbatim}
-
-\end{frame} 
-
-
-
-\begin{frame}[fragile]
-\frametitle{\insertframenumber~ Let's do Machine Learning: Training a model}
-\begin{Verbatim}
-tr1 <- trainControl(
-        method = 'LGOCV',
-        p = 0.75,
-        savePredictions = TRUE)
-
-m1 <- train(time ~ ., 
-            data = melanoma,
-            method = 'rpart2',
-            tuneLength = 10,
-            metric = 'MAE',
-            trControl = tr2)
-            
-names(m1)
-print(m1)
-
-\end{Verbatim}
-
-\end{frame} 
-
-
-
-
-
-
-
-
-\begin{frame}[fragile]
-\frametitle{\insertframenumber~ Let's do Machine Learning: Training a model}
-\begin{Verbatim}
-CART 
-
-205 samples
-  5 predictor
-
-No pre-processing
-Resampling: Bootstrapped (25 reps) 
-Summary of sample sizes: 205, 205, 205, 205, 205, 205, ... 
-Resampling results across tuning parameters:
-
-  maxdepth  RMSE      Rsquared   MAE     
-  1         986.6243  0.2173459  795.9977
-  2         979.5511  0.2422978  793.5092
-
-\end{Verbatim}
-
-\end{frame} 
-
-
-
-
-
-\begin{frame}
-\frametitle{\insertframenumber~Any questions?}
-
-(This slide will occur many times in this slidedeck.)
-
-\end{frame} 
-
-
-
-\begin{frame}
-\frametitle{\insertframenumber~What is machine learning? look at learned model.}
-\vspace{-4mm}
-\begin{figure}
-    \includegraphics[width = 0.5\textwidth]{rpart_tree.pdf}
-\end{figure} 
-
-\end{frame} 
-
 
 
 
@@ -312,20 +329,6 @@ Classification or regression.
 \end{frame} 
 
 
-\begin{frame}
-\frametitle{\insertframenumber~Caret package}
-\begin{itemize}
-\item https://topepo.github.io/caret/model-training-and-tuning.html
-\item Unified interface to hundreds of models
-\item Supervised learning
-\item Full ML workflow
-\item Excellent documentation
-\item Annoyingly caret doesn't have a function that plots obs vs preds of the hold out data.
-\item I have written my own plotCV() function. Please load it now.
-
-\end{itemize}
-
-\end{frame} 
 
 
 
@@ -341,27 +344,73 @@ Classification or regression.
 
 
 
-
-
-
 \begin{frame}[fragile]
-\frametitle{\insertframenumber~What is ML good at? Predicting new data.}
+\frametitle{\insertframenumber~ Out-of-sample validation}
 \renewcommand{\FancyVerbFormatLine}[1]{%
-   \ifnum\value{FancyVerbLine}=8\color{cyan}#1%
+   \ifnum\value{FancyVerbLine}=2\color{cyan}#1%
    \else #1\fi}
 \begin{Verbatim}
 tr1 <- trainControl(
         method = 'LGOCV',
+        number = 1,
         p = 0.75,
         savePredictions = TRUE)
 
 m1 <- train(time ~ ., 
             data = melanoma,
             method = 'rpart2',
-            trControl = tr_random)
-
+            tuneLength = 3,
+            metric = 'MAE',
+            trControl = tr1)
+            
 \end{Verbatim}
 
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Out-of-sample validation}
+
+\begin{itemize}
+\item k-fold
+\begin{itemize}
+\item split into k group. user each group on turn as hold out.
+\end{itemize}
+\item Repeated k-fold
+\begin{itemize}
+\item Do k-for multiple times with different random splits.
+\end{itemize}
+\item Bootstrap
+\begin{itemize}
+\item Sample N with replacement as training.
+\end{itemize}
+\end{itemize}
+\end{frame} 
+
+\begin{frame}
+\frametitle{\insertframenumber~Out-of-sample validation}
+
+\begin{itemize}
+\item Seperate study
+\item Spatial
+\item Temporal
+\item By covariates
+\item What question do you want to ask?
+\end{itemize}
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Outer validation}
+
+\begin{itemize}
+\item Selecting a model \emph{is part of the model}.
+\item If we consider many models, taking the best one is a form of overfitting
+\item Outer cross-validation if this is part of primary research question.
+\item Unfortunately not implemented in caret. Must do it manually.
+\item AKA Train, test, validate.
+\end{itemize}
 \end{frame} 
 
 
@@ -369,114 +418,260 @@ m1 <- train(time ~ .,
 
 
 
+\begin{frame}
+\frametitle{\insertframenumber~Any questions?}
+
+
+\end{frame} 
+
+
+
+
+
 \begin{frame}[fragile]
-\frametitle{\insertframenumber~What is ML good at?}
+\frametitle{\insertframenumber~ Let's do Machine Learning: Training a model}
 \renewcommand{\FancyVerbFormatLine}[1]{%
-   \ifnum\value{FancyVerbLine}=7\color{cyan}#1%
+   \ifnum\value{FancyVerbLine}=11\color{cyan}#1%
    \else #1\fi}
 \begin{Verbatim}
-tr <- trainControl( % todo
+tr1 <- trainControl(
         method = 'LGOCV',
-        number = 1)
-
-m2 <- train(time ~ ., 
-            data = melanoma,
-            method = 'lm',
-            trControl = tr)
-
-\end{Verbatim}
-
-\end{frame} 
-
-
-
-\begin{frame}
-\frametitle{\insertframenumber~Which was better? Any questions?}
-
-\begin{itemize}
-\item Thumbs up: rpart2.
-\item Smiley face: lm.
-\end{itemize}
-\end{frame} 
-
-
-
-
-\begin{frame}[fragile]
-\frametitle{\insertframenumber~What is ML bad at?}
-\renewcommand{\FancyVerbFormatLine}[1]{%
-   \ifnum\value{FancyVerbLine}=1\color{cyan}#1%
-   \else #1\fi}
-\begin{Verbatim}
-pl <- read.csv(
-  file = 'https://raw.githubusercontent.com/timcdlucas/ml_workshop/master/planets.csv')
-
-pl1 <- train(g ~ ., 
-            data = pl,
-            method = 'rpart2',
-            trControl = tr)
-
-
-\end{Verbatim}
-
-\end{frame} 
-
-
-\begin{frame}[fragile]
-\frametitle{\insertframenumber~What is ML bad at?}
-\renewcommand{\FancyVerbFormatLine}[1]{%
-   \ifnum\value{FancyVerbLine}=1\color{cyan}#1%
-   \else #1\fi}
-\begin{Verbatim}
-pl <- read.csv(
-  file = 'https://raw.githubusercontent.com/timcdlucas/ml_workshop/master/planets.csv')
-
-pl2 <- train(g ~ 0 + I(m1 * m2 / d ^ 2), 
-            data = pl,
-            method = 'lm',
-            trControl = tr)
-
-\end{Verbatim}
-
-\end{frame} 
-
-
-
-\begin{frame}
-\frametitle{\insertframenumber~Which was better? Any questions?}
-
-\begin{itemize}
-\item Thumbs up: rpart2.
-\item Smiley face: lm.
-\end{itemize}
-\end{frame} 
-
-
-
-
-
-
-
-\begin{frame}[fragile]
-\frametitle{\insertframenumber~Basic ML workflow}
-\begin{Verbatim}
-tr2 <- trainControl(
-        method = 'repeatedcv',
-        number = 5,
-        repeats = 3, 
+        number = 1,
+        p = 0.75,
         savePredictions = TRUE)
 
 m1 <- train(time ~ ., 
             data = melanoma,
             method = 'rpart2',
-            tuneLength = 10,
+            tuneLength = 3,
             metric = 'MAE',
-            trControl = tr2)
-
+            trControl = tr1)
+            
 \end{Verbatim}
 
 \end{frame} 
 
+
+\begin{frame}
+\frametitle{\insertframenumber~Error metrics: regression}
+
+\begin{itemize}
+\item Match error metric to question.
+\item Aim for interpretability.
+\item $MAE = \operatorname{mean}(\operatorname{abs}(\text{pred} - \text{obs})) $
+\item $R^2$
+\item RMSE, correlation are less interpretable
+\item Correlation isn't quite measuring what you think.
+\item Scatter plots!
+\end{itemize}
+\end{frame} 
+
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Error metrics: regression}
+
+\begin{itemize}
+\item Scatter plots!
+\item Annoyingly caret doesn't have a function that plots obs vs preds of the hold out data.
+\item I have written my own plotCV() function. Please load it now.
+\end{itemize}
+\end{frame} 
+
+
+
+
+
+
+  \begin{frame}[fragile]
+\frametitle{\insertframenumber~Error metrics: regression}
+\begin{columns}
+\begin{column}{0.6\textwidth}  %%<--- here
+    \begin{center}
+     \includegraphics[width=1\textwidth]{scatter_1.pdf}
+     \end{center}
+\end{column}
+\begin{column}{0.4\textwidth}
+\begin{Verbatim}
+plotCV(m1, smooth = FALSE)
+            
+\end{Verbatim}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Error metrics: classification}
+
+\begin{itemize}
+\item Match error metric to question.
+\item Aim for interpretability.
+\item Class balance. Model that never predicts rare class will have high accuracy.
+\item I can predict COVID infection with $\sim$97\% accuracy by saying noone has COVID. 
+\item Kappa, AUC.
+\item Accuracy does *not* account for imbalance.
+\item Confusion matrices.
+\end{itemize}
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Error metrics are really important.}
+
+    \includegraphics[width = 0.45\textwidth]{rpart_acc.pdf}%
+    \includegraphics[width = 0.45\textwidth]{rpart_kappa.pdf}
+
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Any questions?}
+
+
+\end{frame} 
+
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~Chosing a method (surprisingly unimportant)}
+\renewcommand{\FancyVerbFormatLine}[1]{%
+   \ifnum\value{FancyVerbLine}=9\color{cyan}#1%
+   \else #1\fi}
+\begin{Verbatim}
+tr1 <- trainControl(
+        method = 'LGOCV',
+        number = 1,
+        p = 0.75,
+        savePredictions = TRUE)
+
+m1 <- train(time ~ ., 
+            data = melanoma,
+            method = 'rpart2',
+            tuneLength = 3,
+            metric = 'MAE',
+            trControl = tr1)
+            
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Chosing a method (surprisingly unimportant)}
+\vspace{-4mm}
+\begin{figure}
+    \includegraphics[width = 0.5\textwidth]{rpart_depth6.pdf}
+\end{figure} 
+
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~No free lunch theorem}
+\begin{itemize}
+\item No such thing as a universal, `best' machine learning model.
+\item So try a few.
+\end{itemize}
+
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~What is a RandomForest?}
+
+\begin{itemize}
+\item method = 'rf' or method = 'ranger' in caret.
+\item Instead of 1 tree, fit many trees and take average prediction.
+\item For each tree take a random bootstrap of the data.
+\item For each node consider a random subset of covariates.
+	\begin{itemize}
+	\item Consider mtry covariates. Tuning parameter.
+	\end{itemize}
+\item These both help prevent overfitting.
+\end{itemize}
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{\insertframenumber~What is a Neural Network?}
+
+\vspace{6mm}
+\begin{figure}
+    \includegraphics[height = 0.7\textheight]{neural_network.pdf}
+\end{figure} 
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{\insertframenumber~What is a Neural Network? Little GLMs.}
+
+\vspace{6mm}
+\begin{figure}
+    \includegraphics[height = 0.7\textheight]{neural_network2.pdf}
+\end{figure} 
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{\insertframenumber~What is a Neural Network? Little GLMs.}
+
+\vspace{6mm}
+\begin{figure}
+    \includegraphics[height = 0.7\textheight]{neural_network3.pdf}
+\end{figure} 
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~What is a Neural Network?}
+
+\begin{itemize}
+\item method = 'nnet', method = 'mlpKerasDropout' or many others.
+\item Optimise the parameters but there are lots of local optima.
+\item What ``architecture''?
+	\begin{itemize}
+	\item Hidden units.
+	\item Extra hidden layers
+	\item Everything connected to everything else?
+	\end{itemize}
+\end{itemize}
+\end{frame} 
+
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~Tuning/hyperparameters}
+\renewcommand{\FancyVerbFormatLine}[1]{%
+   \ifnum\value{FancyVerbLine}=10\color{cyan}#1%
+   \else #1\fi}
+\begin{Verbatim}
+tr1 <- trainControl(
+        method = 'LGOCV',
+        number = 1,
+        p = 0.75,
+        savePredictions = TRUE)
+
+m1 <- train(time ~ ., 
+            data = melanoma,
+            method = 'rpart2',
+            tuneLength = 3,
+            metric = 'MAE',
+            trControl = tr1)
+            
+\end{Verbatim}
+
+\end{frame} 
 
 
 
@@ -543,93 +738,23 @@ Try \texttt{tuneLength = 10} values.
 \frametitle{\insertframenumber~Overfitting and bias/variance.}
 
 \begin{figure}
-    \includegraphics[height = 0.8\textheight]{bias-variance.png}
+    \includegraphics[height = 0.8\textheight]{bias_variance.pdf}
+\end{figure} 
+
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Overfitting and bias/variance.}
+
+\begin{figure}
+    \includegraphics[height = 0.8\textheight]{bias_variance_optim.pdf}
 \end{figure} 
 
 \end{frame} 
 
 
 
-
-\begin{frame}
-\frametitle{\insertframenumber~Any questions?}
-
-
-\end{frame} 
-
-
-\begin{frame}[fragile]
-\frametitle{\insertframenumber~Crossvalidation}
-\begin{Verbatim}
-
-tr2 <- trainControl(
-        method = 'repeatedcv',
-        number = 5,
-        repeats = 3, 
-        savePredictions = TRUE)
-
-m1 <- train(time ~ ., 
-            data = melanoma,
-            method = 'rpart2',
-            tuneLength = 10,
-            metric = 'MAE',
-            trControl = tr2)
-
-\end{Verbatim}
-
-\end{frame} 
-
-
-
-
-\begin{frame}
-\frametitle{\insertframenumber~Crossvalidation}
-
-\begin{itemize}
-\item k-fold
-\begin{itemize}
-\item split into k group. user each group on turn as hold out.
-\end{itemize}
-\item Repeated k-fold
-\begin{itemize}
-\item Do k-for multiple times with different random splits.
-\end{itemize}
-\item Bootstrap
-\begin{itemize}
-\item Sample N with replacement as training.
-\end{itemize}
-\end{itemize}
-\end{frame} 
-
-\begin{frame}
-\frametitle{\insertframenumber~Crossvalidation}
-
-\begin{itemize}
-\item Seperate study
-\item Spatial
-\item Temporal
-\item By covariates
-\item What question do you want to ask?
-\end{itemize}
-\end{frame} 
-
-
-\begin{frame}
-\frametitle{\insertframenumber~Outer Crossvalidation}
-
-\begin{itemize}
-\item Selecting a model \emph{is part of the model}.
-\item If we consider many models, taking the best one is a form of overfitting
-\item Outer cross-validation if this is part of primary research question.
-\item Unfortunately not implemented in caret. Must do it manually.
-\end{itemize}
-\end{frame} 
-
-
-
-
-
-
 \begin{frame}
 \frametitle{\insertframenumber~Any questions?}
 
@@ -639,71 +764,48 @@ m1 <- train(time ~ .,
 
 
 
-\begin{frame}
-\frametitle{\insertframenumber~Error metrics: regression}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Caret package}
 \begin{itemize}
-\item Match error metric to question.
-\item Aim for interpretability.
-\item MAE, $R^2$
-\item RMSE, correlation are less interpretable
-\item Correlation isn't quite measuring what you think.
-\item Scatter plots!
-\end{itemize}
-\end{frame} 
+\item https://topepo.github.io/caret/model-training-and-tuning.html
+\item Unified interface to hundreds of models
+\item Supervised learning
+\item Full ML workflow
+\item Excellent documentation
 
 
-\begin{frame}
-\frametitle{\insertframenumber~Error metrics: classification}
-
-\begin{itemize}
-\item Match error metric to question.
-\item Aim for interpretability.
-\item Class balance. Model that never predicts rare class will have high accuracy.
-\item I can predict COVID infection with $\sim$97\% accuracy by saying noone has COVID. 
-\item Kappa, AUC.
-\item Accuracy does *not* account for imbalance.
-\item Confusion matrices.
-\end{itemize}
-\end{frame} 
-
-
-
-\begin{frame}
-\frametitle{\insertframenumber~Error metrics are really important.}
-
-    \includegraphics[width = 0.45\textwidth]{rpart_acc.pdf}%
-    \includegraphics[width = 0.45\textwidth]{rpart_kappa.pdf}
-
-\end{frame} 
-
-
-\begin{frame}
-\frametitle{\insertframenumber~Any questions?}
-
-
-\end{frame} 
-
-
-
-\begin{frame}
-\frametitle{\insertframenumber~No free lunch theorem}
-\begin{itemize}
-\item No such thing as a universal, `best' machine learning model.
-\item For any model, there exists a dataset for which that model is the best.
 \end{itemize}
 
 \end{frame} 
-
-
-\begin{frame}
-\frametitle{\insertframenumber~Coffee. Any questions?}
-
-
-\end{frame} 
-
-
-
 
 
 \begin{frame}
@@ -718,6 +820,19 @@ m1 <- train(time ~ .,
 \item Some models don't handle NAs. Error messages not always very useful.
 \end{enumerate}
 
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Caret documentation}
+
+\begin{itemize}
+\item https://topepo.github.io/caret/index.html
+\item Really excellent!
+\item Model list with tuning parameters.
+\item Models by tag (data weights, tree-based, implicit feature selection).
+\end{itemize}
 \end{frame} 
 
 
@@ -742,8 +857,6 @@ class(m1$finalModel)
 \end{Verbatim}
 
 \end{frame} 
-
-
 
 
 \begin{frame}[fragile]
@@ -798,6 +911,85 @@ plot(m_df)
 
 
 \end{frame} 
+
+
+
+
+
+
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~What is ML bad at?}
+\renewcommand{\FancyVerbFormatLine}[1]{%
+   \ifnum\value{FancyVerbLine}=1\color{cyan}#1%
+   \else #1\fi}
+\begin{Verbatim}
+pl <- read.csv(
+  file = 'https://raw.githubusercontent.com/timcdlucas/ml_workshop/master/planets.csv')
+
+pl1 <- train(g ~ ., 
+            data = pl,
+            method = 'rpart2',
+            trControl = tr)
+
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~What is ML bad at?}
+\renewcommand{\FancyVerbFormatLine}[1]{%
+   \ifnum\value{FancyVerbLine}=1\color{cyan}#1%
+   \else #1\fi}
+\begin{Verbatim}
+pl <- read.csv(
+  file = 'https://raw.githubusercontent.com/timcdlucas/ml_workshop/master/planets.csv')
+
+pl2 <- train(g ~ 0 + I(m1 * m2 / d ^ 2), 
+            data = pl,
+            method = 'lm',
+            trControl = tr)
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Which was better? Any questions?}
+
+\begin{itemize}
+\item Thumbs up: rpart2.
+\item Smiley face: lm.
+\end{itemize}
+\end{frame} 
+
+
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Coffee. Any questions?}
+
+
+\end{frame} 
+
+
+
+
+
+
+
 
 
 
@@ -955,6 +1147,17 @@ m5 <- train(time ~ .,
 
 
 
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~Partial dependence plots}
+\begin{Verbatim}
+pdp(m1)
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+
 \begin{frame}
 \frametitle{\insertframenumber~Any questions?}
 
@@ -963,79 +1166,6 @@ m5 <- train(time ~ .,
 
 
 
-
-
-\begin{frame}
-\frametitle{\insertframenumber~What is a RandomForest?}
-
-\begin{itemize}
-\item Instead of 1 tree, fit many trees and take average prediction.
-\item For each tree take a random bootstrap of the data.
-\item For each node consider a random subset of covariates.
-	\begin{itemize}
-	\item Consider mtry covariates. Tuning parameter.
-	\end{itemize}
-\item These both help prevent overfitting.
-\end{itemize}
-\end{frame} 
-
-
-\begin{frame}
-\frametitle{\insertframenumber~What is a Neural Network?}
-
-\vspace{6mm}
-\begin{figure}
-    \includegraphics[height = 0.7\textheight]{neural_network.pdf}
-\end{figure} 
-\end{frame} 
-
-
-\begin{frame}
-\frametitle{\insertframenumber~What is a Neural Network? Little GLMs.}
-
-\vspace{6mm}
-\begin{figure}
-    \includegraphics[height = 0.7\textheight]{neural_network2.pdf}
-\end{figure} 
-\end{frame} 
-
-
-\begin{frame}
-\frametitle{\insertframenumber~What is a Neural Network? Little GLMs.}
-
-\vspace{6mm}
-\begin{figure}
-    \includegraphics[height = 0.7\textheight]{neural_network3.pdf}
-\end{figure} 
-\end{frame} 
-
-
-
-\begin{frame}
-\frametitle{\insertframenumber~What is a Neural Network?}
-
-\begin{itemize}
-\item Optimise the parameters but there are lots of local optima.
-\item What ``architecture''?
-	\begin{itemize}
-	\item Hidden units.
-	\item Extra hidden layers
-	\item Everything connected to everything else?
-	\end{itemize}
-\end{itemize}
-\end{frame} 
-
-
-\begin{frame}
-\frametitle{\insertframenumber~Caret documentation}
-
-\begin{itemize}
-\item https://topepo.github.io/caret/index.html
-\item Really excellent!
-\item Model list with tuning parameters.
-\item Models by tag (data weights, tree-based, implicit feature selection).
-\end{itemize}
-\end{frame} 
 
 
 \begin{frame}
