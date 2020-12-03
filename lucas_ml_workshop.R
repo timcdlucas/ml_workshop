@@ -433,3 +433,36 @@ plot(c2)
 dev.off()
 
 confusionMatrix(c2)
+
+
+
+
+
+library(dplyr)
+melanoma %>% 
+  sample_frac(16, replace = TRUE) %>% 
+  mutate(resamp = rep(1:16, nrow(melanoma))) %>% 
+  ggplot(aes(time, thickness)) + 
+    geom_point() + 
+    facet_wrap(~ resamp) + 
+    geom_smooth(method = 'lm', colour = 'red', se = FALSE) + 
+    geom_smooth(span = 0.2, se = FALSE)
+
+ggsave('bias_variance.pdf')
+
+
+melanoma %>% 
+  sample_frac(16, replace = TRUE) %>% 
+  mutate(resamp = rep(1:16, nrow(melanoma))) %>% 
+  ggplot(aes(time, thickness)) + 
+    geom_point() + 
+    facet_wrap(~ resamp) + 
+    geom_smooth(span = 1, se = FALSE)
+
+ggsave('bias_variance_optim.pdf')
+
+
+
+
+
+
