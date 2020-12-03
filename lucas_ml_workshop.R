@@ -4,6 +4,7 @@ library(boot)
 library(ggplot2)
 library(pdp)
 library(rpart.plot)
+library(caret)
 
 
 # Followed until 1977.
@@ -24,7 +25,6 @@ hist(melanoma$time)
 
 
 # Slide 5.
-library(caret)
 
 m0 <- train(time ~ ., 
             data = melanoma,
@@ -42,37 +42,15 @@ print(m0)
 rpart.plot(m0$finalModel)
 
 
-# Slide 13
-# Set up our out-of-sample validation.
-# Leave group out cross validation.
-# Hold out 75% of the data.
-# Save preditions so we can plot observed vs fitted.
-tr1 <- trainControl(
-        method = 'LGOCV',
-        p = 0.25,
-        number = 1,
-        savePredictions = TRUE)
-
-# By default the random split is done in train()
-# So we use the same seed for both models.
-# See the index argument of trainControl() for alternative.
-set.seed(1312)
-m1 <- train(time ~ ., 
-            data = melanoma,
-            method = 'rpart2',
-            trControl = tr1)
-m1
 
 
-set.seed(1312)
-m2 <- train(time ~ ., 
-            data = melanoma,
-            method = 'lm',
-            trControl = tr1)
-m2            
 
-
-            
+# Slide 11
+# Annoyingly caret doesn't have a function
+# that plots obs vs preds of the hold out data.
+# I have written my own here it is.
+# plotObsVsPred() plots in sample and a completely seperate hold out if you specify it. 
+# Which isn't typically what you want.
 
 plotCV <- function(t, print = TRUE, smooth = TRUE, alpha = 1){
   stopifnot(inherits(t, 'train'))
@@ -102,17 +80,51 @@ plotCV <- function(t, print = TRUE, smooth = TRUE, alpha = 1){
 
 } 
 
+# This function finds the best tuning parameters and pulls
+# out the relevant preditions.
 best_tune_preds <- function (t){
-
-stopifnot(inherits(t, 'train'))
-
-  row_matches <- sapply(1:length(t$bestTune), function(x) t$pred[, names(t$bestTune)[x]] == t$bestTune[[x]])
-  best_rows <- rowMeans(row_matches) == 1
-
-d <- t$pred[best_rows, ]
+  
+  stopifnot(inherits(t, 'train'))
+  
+    row_matches <- sapply(1:length(t$bestTune), function(x) t$pred[, names(t$bestTune)[x]] == t$bestTune[[x]])
+    best_rows <- rowMeans(row_matches) == 1
+  
+  d <- t$pred[best_rows, ]
 
 }
 
+
+
+
+
+# Slide 13
+# Set up our out-of-sample validation.
+# Leave group out cross validation.
+# Hold out 75% of the data.
+# Save preditions so we can plot observed vs fitted.
+tr1 <- trainControl( # todo
+        method = 'LGOCV',
+        p = 0.75,
+        number = 1,
+        savePredictions = TRUE)
+
+# By default the random split is done in train()
+# So we use the same seed for both models.
+# See the index argument of trainControl() for alternative.
+set.seed(1312)
+m1 <- train(time ~ ., 
+            data = melanoma,
+            method = 'rpart2',
+            trControl = tr1)
+m1
+
+
+set.seed(1312)
+m2 <- train(time ~ ., 
+            data = melanoma,
+            method = 'lm',
+            trControl = tr1)
+m2            
 
 plotCV(m2, smooth = FALSE)
 plotCV(m1, smooth = FALSE)
@@ -129,15 +141,19 @@ pl <- read.csv(
 set.seed(31281)
 pl1 <- train(g ~ ., 
             data = pl,
-            method = 'rf',
+            method = 'rpart2',
             trControl = tr1)
+
+pl1
 
 set.seed(31281)
 pl2 <- train(g ~ 0 + I(m1 * m2 / d ^ 2), 
             data = pl,
             method = 'lm',
             trControl = tr1)
-            
+
+pl2            
+
 plotCV(pl1, smooth = FALSE, print = FALSE) + scale_y_log10() + scale_x_log10()
 plotCV(pl2, smooth = FALSE, print = FALSE) + scale_y_log10() + scale_x_log10()
 
@@ -171,6 +187,67 @@ plot(m1)
 
 
 
+# Slide 38
+
+plot(m1)
+
+# Uses model trained on full dataset.
+# Use this to test on a outer validation dataset.
+predict(m1) 
+
+m1$results # Validation results.
+m1$pred # All validation predictions (all hyperpars)
+m1$finalModel # The final fitted model
+class(m1$finalModel)
+
+
+
+
+# Slide 39
+# Random search instead of grid search.
+# Good for models with lots of hyperparameters.
+
+tr_random <- trainControl(
+              search = 'random',
+              method = 'repeatedcv',
+              savePredictions = TRUE)
+
+m_random <- train(time ~ ., 
+            data = melanoma,
+            method = 'enet',
+            tuneLength = 20,
+            metric = 'MAE',
+            trControl = tr_random)
+plot(m_random)
+
+
+
+
+
+# Slide 40
+# Give an explit dataframe of parameters
+# Need to look up the exact names 
+
+gr <- data.frame(lambda = c(1e-4, 1e-5, 1e-6),
+                 fraction = c(0.1, 0.5, 0.5))
+m_df <- train(time ~ ., 
+            data = melanoma,
+            method = 'enet',
+            tuneGrid = gr,
+            metric = 'MAE',
+            trControl = tr1)
+plot(m_df)
+
+
+gr_expand <- expand.grid(lambda = c(1e-4, 1e-5, 1e-6),
+                 fraction = c(0.1, 0.5, 0.5))
+m_df2 <- train(time ~ ., 
+            data = melanoma,
+            method = 'enet',
+            tuneGrid = gr_expand,
+            metric = 'MAE',
+            trControl = tr1)
+plot(m_df2)
 
 
 
@@ -179,9 +256,7 @@ plot(m1)
 
 
 
-
-
-# Slide 37
+# Slide 42
 
 tr2 <- trainControl(
         method = 'repeatedcv',
@@ -189,14 +264,18 @@ tr2 <- trainControl(
         repeats = 3, 
         savePredictions = TRUE)
 
-# Slide 37
+# Slide 43
 my_metric <- 'MAE'
 
 
 
-# Slide 40
+# Slide 45
 
 # A good benchmark
+#  Penalised linear regression.
+#  Regularise model by pushing coefficients towards zero.
+#  A blend of LASSO and ridge penalties
+
 set.seed(131210)
 m1 <- train(time ~ .,
             data = melanoma,
@@ -209,7 +288,7 @@ plotCV(m1)
 
 
 
-# Slide 41
+# Slide 46
 
 # A good benchmark
 set.seed(131210)
@@ -226,7 +305,7 @@ plotCV(m2)
 
 
 
-# Slide 42
+# Slide 47
 
 # A good benchmark
 set.seed(131210)
@@ -242,7 +321,7 @@ plotCV(m3)
 
 
 
-# Slide 43
+# Slide 48
 
 # Try a few models. No free lunch.
 # This one is slower. 
@@ -261,7 +340,7 @@ plotCV(m4)
 
 
 
-# Slide 44
+# Slide 49
 
 # A little bit slow.
 set.seed(131210)
@@ -280,6 +359,15 @@ plotCV(m5)
 
 
 
+
+
+
+
+
+
+
+
+# Extras
 
 set.seed(1312)
 m2 <- train(time ~ ., 
@@ -309,14 +397,6 @@ dev.off()
 pdf('rpart_depth6.pdf')
 rpart.plot(m3$finalModel)
 dev.off()
-
-
-
-
-
-
-
-
 
 
 
