@@ -128,6 +128,52 @@
 
 \begin{frame}[fragile]
 \frametitle{\insertframenumber~Machine Learning Workshop: Workflow overview.}
+\footnotesize{
+\vspace{3mm}
+{\color{gray}Please open R script lucas\_ml\_workshop.R and load packages.
+
+We'll talk about the following code in a minute.}
+\vspace{1mm}
+\begin{Verbatim}
+tr1 <- trainControl(
+         method = 'LGOCV',        # Hold out data for testing
+         p = 0.75,
+         number = 1,
+         savePredictions = TRUE)
+
+m1 <-  train(
+	 time ~ .,                # Define response and covariates
+         data = melanoma,         # Select the data
+         method = 'rpart2',       # Choose a model
+         tuneLength = 3,          # Setup fine tuning
+         metric = 'MAE',          # Define what counts as `good'
+         trControl = tr1)
+
+\end{Verbatim}
+}
+\end{frame} 
+
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Workshop structure}
+\begin{enumerate}
+\item Overview of machine learning workflow/single analysis.
+\item Describe data and run basic analysis.
+\item What is machine learning?
+\item Detailed description of each stage in the analysis.
+\item More information on caret.
+\item What is machine learning bad at?
+\item Fuller machine learning workflow.
+\item Final details.
+\end{enumerate}
+
+\end{frame} 
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~ Machine Learning Workshop: Workflow overview.}
 
 \vspace{2mm}
 \begin{Verbatim}
@@ -149,23 +195,6 @@ m1 <-  train(
 
 \end{frame} 
 
-
-
-
-\begin{frame}
-\frametitle{\insertframenumber~Workshop structure}
-\begin{enumerate}
-\item Overview of machine learning workflow/single analysis.
-\item Describe data and run basic analysis.
-\item What is machine learning?
-\item Detailed description of each stage in the analysis.
-\item More information on caret.
-\item Some models don't handle NAs. Error messages not always very useful.
-\item What is machine learning bad at?.
-\item Final details.
-\end{enumerate}
-
-\end{frame} 
 
 
 
@@ -429,7 +458,7 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}[fragile]
-\frametitle{\insertframenumber~ Let's do Machine Learning: Training a model}
+\frametitle{\insertframenumber~ Let's do Machine Learning: Error metrics.}
 \renewcommand{\FancyVerbFormatLine}[1]{%
    \ifnum\value{FancyVerbLine}=11\color{cyan}#1%
    \else #1\fi}
@@ -475,7 +504,7 @@ m1 <- train(time ~ .,
 \begin{itemize}
 \item Scatter plots!
 \item Annoyingly caret doesn't have a function that plots obs vs preds of the hold out data.
-\item I have written my own plotCV() function. Please load it now.
+\item I have written my own plotCV() function. We'll load it later.
 \end{itemize}
 \end{frame} 
 
@@ -486,19 +515,12 @@ m1 <- train(time ~ .,
 
   \begin{frame}[fragile]
 \frametitle{\insertframenumber~Error metrics: regression}
-\begin{columns}
-\begin{column}{0.6\textwidth}  %%<--- here
+
+\vspace{5mm}
     \begin{center}
-     \includegraphics[width=1\textwidth]{scatter_1.pdf}
+     \includegraphics[width=0.75\textwidth]{scatter_1.pdf}
      \end{center}
-\end{column}
-\begin{column}{0.4\textwidth}
-\begin{Verbatim}
-plotCV(m1, smooth = FALSE)
-            
-\end{Verbatim}
-\end{column}
-\end{columns}
+
 \end{frame}
 
 
@@ -516,16 +538,6 @@ plotCV(m1, smooth = FALSE)
 \item Accuracy does *not* account for imbalance.
 \item Confusion matrices.
 \end{itemize}
-\end{frame} 
-
-
-
-\begin{frame}
-\frametitle{\insertframenumber~Error metrics are really important.}
-
-    \includegraphics[width = 0.45\textwidth]{rpart_acc.pdf}%
-    \includegraphics[width = 0.45\textwidth]{rpart_kappa.pdf}
-
 \end{frame} 
 
 
@@ -565,7 +577,7 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{\insertframenumber~Chosing a method (surprisingly unimportant)}
+\frametitle{\insertframenumber~Chosing a method: rpart2}
 \vspace{-4mm}
 \begin{figure}
     \includegraphics[width = 0.5\textwidth]{rpart_depth6.pdf}
@@ -597,7 +609,6 @@ m1 <- train(time ~ .,
 	\begin{itemize}
 	\item Consider mtry covariates. Tuning parameter.
 	\end{itemize}
-\item These both help prevent overfitting.
 \end{itemize}
 \end{frame} 
 
@@ -647,6 +658,23 @@ m1 <- train(time ~ .,
 	\end{itemize}
 \end{itemize}
 \end{frame} 
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Coffee. Any questions?}
+
+
+\end{frame} 
+
+
+
+
+
 
 
 
@@ -818,6 +846,7 @@ Try \texttt{tuneLength = 10} values.
 \item Some models are only regression, some only classification, some both.
 \item Caret will ask you if you want to install additional packages.
 \item Some models don't handle NAs. Error messages not always very useful.
+\item Check documentation for parallel computation.
 \end{enumerate}
 
 \end{frame} 
@@ -859,13 +888,31 @@ class(m1$finalModel)
 \end{frame} 
 
 
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~Caret functions and internals}
+\begin{Verbatim}
+
+# Load plotCV() and best_tune_preds() functions.
+
+plotCV(m1) 
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+
 \begin{frame}[fragile]
 \frametitle{\insertframenumber~Grid search for models with many hyperparameters}
 \begin{Verbatim}
 
 tr_random <- trainControl(
               search = 'random',
-              method = 'repeatedcv',
               savePredictions = TRUE)
 
 m_random <- train(time ~ ., 
@@ -873,7 +920,7 @@ m_random <- train(time ~ .,
             method = 'enet',
             tuneLength = 20,
             metric = 'MAE',
-            trControl = tr1)
+            trControl = tr_random)
             
 \end{Verbatim}
 
@@ -896,7 +943,7 @@ m_df <- train(time ~ .,
             method = 'enet',
             tuneGrid = gr,
             metric = 'MAE',
-            trControl = tr_random)
+            trControl = tr1)
 plot(m_df)
 
             
@@ -933,7 +980,7 @@ pl <- read.csv(
 pl1 <- train(g ~ ., 
             data = pl,
             method = 'rpart2',
-            trControl = tr)
+            trControl = tr1)
 
 
 \end{Verbatim}
@@ -953,7 +1000,7 @@ pl <- read.csv(
 pl2 <- train(g ~ 0 + I(m1 * m2 / d ^ 2), 
             data = pl,
             method = 'lm',
-            trControl = tr)
+            trControl = tr1)
 
 \end{Verbatim}
 
@@ -975,15 +1022,11 @@ pl2 <- train(g ~ 0 + I(m1 * m2 / d ^ 2),
 
 
 
-
-
-
 \begin{frame}
-\frametitle{\insertframenumber~Coffee. Any questions?}
+\frametitle{\insertframenumber~Short coffee.}
 
 
 \end{frame} 
-
 
 
 
@@ -1101,22 +1144,42 @@ m3 <- train(time ~ .,
             metric = my_metric,
             trControl = tr2)
 
-# Look at scatter plots for regression
 plotCV(m3)
+pdp::partial(m3, pred.var = c('thickness'), plot = TRUE)
+
 \end{Verbatim}
 
 \end{frame} 
 
 
+\begin{frame}
+\frametitle{\insertframenumber~Partial dependence plot.}
+\vspace{2mm}
+Fitted relationship between thickness and time.
+\begin{figure}
+    \includegraphics[width = 0.4\textwidth]{rf_pdp_1.pdf}
+
+\end{figure} 
+
+\end{frame} 
+
+
+
 \begin{frame}[fragile]
 \frametitle{\insertframenumber~Fuller ML workflow}
+\vspace{1mm}
 \begin{Verbatim}
+tr2_random <- trainControl(
+        method = 'repeatedcv',
+        number = 5,
+        repeats = 3, 
+        search = 'random',
+        savePredictions = TRUE)
 
-# Try a few models. No free lunch.
 m4 <- train(time ~ ., 
             data = melanoma,
             method = 'xgbTree',
-            tuneLength = 3,
+            tuneLength = 10,
             metric = my_metric,
             trControl = tr2)
 
@@ -1144,17 +1207,6 @@ m5 <- train(time ~ .,
 \end{Verbatim}
 
 \end{frame} 
-
-
-
-\begin{frame}[fragile]
-\frametitle{\insertframenumber~Partial dependence plots}
-\begin{Verbatim}
-pdp(m1)
-\end{Verbatim}
-
-\end{frame} 
-
 
 
 
