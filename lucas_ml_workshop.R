@@ -1,4 +1,4 @@
-# Slide 4
+# Slide 5
 
 library(boot)
 library(ggplot2)
@@ -24,7 +24,7 @@ featurePlot(melanoma[, -1], melanoma$time)
 hist(melanoma$time)
 
 
-# Slide 5
+# Slide 6
 tr1 <- trainControl(
         method = 'LGOCV',
         number = 1,
@@ -45,7 +45,7 @@ print(m1)
 #############################################
 
 
-# Slide 47
+# Slide 46
 plot(m1)
 
 # Uses model trained on full dataset.
@@ -59,7 +59,7 @@ class(m1$finalModel)
 
 
 
-# Slide 48
+# Slide 47
 # Annoyingly caret doesn't have a function
 # that plots obs vs preds of the hold out data.
 # I have written my own here it is.
@@ -117,7 +117,7 @@ plotCV(m1)
 
 
 
-# Slide 49
+# Slide 48
 # Random search instead of grid search.
 # Good for models with lots of hyperparameters.
 
@@ -137,7 +137,7 @@ plot(m_random)
 
 
 
-# Slide 50
+# Slide 49
 # Give an explicit dataframe of parameters
 # Need to look up the exact names 
 
@@ -168,7 +168,7 @@ plot(m_df2)
 
 
 
-# Slide 52
+# Slide 51
 pl <- read.csv(
   file = 'https://raw.githubusercontent.com/timcdlucas/ml_workshop/master/planets.csv')
 
@@ -197,7 +197,7 @@ pl2
 # Fuller workflow
 
 
-# Slide 56
+# Slide 55
 
 tr2 <- trainControl(
         method = 'repeatedcv',
@@ -205,7 +205,7 @@ tr2 <- trainControl(
         repeats = 3, 
         savePredictions = TRUE)
 
-# Slide 57
+# Slide 56
 my_metric <- 'MAE'
 
 
@@ -230,7 +230,7 @@ plotCV(m1)
 
 
 
-# Slide 61
+# Slide 59
 
 # A good benchmark
 set.seed(131210)
@@ -246,7 +246,7 @@ plotCV(m2)
 
 
 
-# Slide 47
+# Slide 60
 
 # A good benchmark
 set.seed(131210)
@@ -269,7 +269,7 @@ pdp::partial(m3,
 
 
 
-# Slide 63
+# Slide 62
 
 # Try a few models. No free lunch.
 # This one is slower. And you might not have it installed.
@@ -296,7 +296,7 @@ m4$results
 min(m4$results$MAE)
 
 
-# Slide 64
+# Slide 63
 
 # A little bit slow.
 set.seed(131210)
