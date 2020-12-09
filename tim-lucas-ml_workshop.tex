@@ -111,9 +111,10 @@
 
 
 % todo
-% tunegrid?
-% caret website
-% caret basics. Classification vs regression?
+
+
+% define tunelength
+
 
 
 \begin{frame}
@@ -155,6 +156,8 @@ featurePlot(melanoma[, -1], y = melanoma$time)
 
 \end{frame} 
 
+
+
 \begin{frame}[fragile]
 \frametitle{\insertframenumber~ Let's do Machine Learning: Training a model}
 \begin{Verbatim}
@@ -171,6 +174,36 @@ print(m0)
 \end{Verbatim}
 
 \end{frame} 
+
+
+
+
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~ Let's do Machine Learning: Training a model}
+\begin{Verbatim}
+CART 
+
+205 samples
+  5 predictor
+
+No pre-processing
+Resampling: Bootstrapped (25 reps) 
+Summary of sample sizes: 205, 205, 205, 205, 205, 205, ... 
+Resampling results across tuning parameters:
+
+  maxdepth  RMSE      Rsquared   MAE     
+  1         986.6243  0.2173459  795.9977
+  2         979.5511  0.2422978  793.5092
+
+\end{Verbatim}
+
+\end{frame} 
+
+
 
 
 
@@ -192,16 +225,6 @@ print(m0)
 
 \end{frame} 
 
-
-
-\begin{frame}
-\frametitle{\insertframenumber~What is machine learning? look at learned model.}
-\vspace{2mm}
-\begin{figure}
-    \includegraphics[width = 0.6\textwidth]{rpart_annotate.pdf}
-\end{figure} 
-
-\end{frame} 
 
 
 
@@ -248,6 +271,9 @@ Classification or regression.
 \item Supervised learning
 \item Full ML workflow
 \item Excellent documentation
+\item Annoyingly caret doesn't have a function that plots obs vs preds of the hold out data.
+\item I have written my own plotCV() function. Please load it now.
+
 \end{itemize}
 
 \end{frame} 
@@ -275,14 +301,15 @@ Classification or regression.
    \ifnum\value{FancyVerbLine}=8\color{cyan}#1%
    \else #1\fi}
 \begin{Verbatim}
-tr <- trainControl(
+tr1 <- trainControl(
         method = 'LGOCV',
-        number = 1)
+        p = 0.75,
+        savePredictions = TRUE)
 
 m1 <- train(time ~ ., 
             data = melanoma,
             method = 'rpart2',
-            trControl = tr)
+            trControl = tr_random)
 
 \end{Verbatim}
 
@@ -299,7 +326,7 @@ m1 <- train(time ~ .,
    \ifnum\value{FancyVerbLine}=7\color{cyan}#1%
    \else #1\fi}
 \begin{Verbatim}
-tr <- trainControl(
+tr <- trainControl( % todo
         method = 'LGOCV',
         number = 1)
 
@@ -337,7 +364,7 @@ pl <- read.csv(
 
 pl1 <- train(g ~ ., 
             data = pl,
-            method = 'rf',
+            method = 'rpart2',
             trControl = tr)
 
 
@@ -355,7 +382,7 @@ pl1 <- train(g ~ .,
 pl <- read.csv(
   file = 'https://raw.githubusercontent.com/timcdlucas/ml_workshop/master/planets.csv')
 
-pl2 <- train(r ~ 0 + I(m1 * m2 / d ^ 2), 
+pl2 <- train(g ~ 0 + I(m1 * m2 / d ^ 2), 
             data = pl,
             method = 'lm',
             trControl = tr)
@@ -370,7 +397,7 @@ pl2 <- train(r ~ 0 + I(m1 * m2 / d ^ 2),
 \frametitle{\insertframenumber~Which was better? Any questions?}
 
 \begin{itemize}
-\item Thumbs up: rf.
+\item Thumbs up: rpart2.
 \item Smiley face: lm.
 \end{itemize}
 \end{frame} 
@@ -386,8 +413,9 @@ pl2 <- train(r ~ 0 + I(m1 * m2 / d ^ 2),
 \begin{Verbatim}
 tr2 <- trainControl(
         method = 'repeatedcv',
-        repeats = 3,
-        number = 5)
+        number = 5,
+        repeats = 3, 
+        savePredictions = TRUE)
 
 m1 <- train(time ~ ., 
             data = melanoma,
@@ -430,9 +458,11 @@ m1 <- train(time ~ .,
 
 \begin{frame}
 \frametitle{\insertframenumber~How do we choose? Out-of-sample performance.}
-\vspace{-2mm}
+\vspace{3mm}
+Try \texttt{tuneLength = 10} values.
+\vspace{-3mm}
 \begin{figure}
-    \includegraphics[width = 0.45\textwidth]{rpart_perf.pdf}
+    \includegraphics[width = 0.42\textwidth]{rpart_perf.pdf}
 \end{figure} 
 
 \end{frame} 
@@ -451,10 +481,10 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{\insertframenumber~Why does performance decrease  with model complexity?}
+\frametitle{\insertframenumber~Why does error  increase  with model complexity?}
 \vspace{-4mm}
 \begin{figure}
-    \includegraphics[width = 0.5\textwidth]{rpart_perf.pdf}
+    \includegraphics[width = 0.45\textwidth]{rpart_perf.pdf}
 \end{figure} 
 
 \end{frame} 
@@ -482,10 +512,12 @@ m1 <- train(time ~ .,
 \begin{frame}[fragile]
 \frametitle{\insertframenumber~Crossvalidation}
 \begin{Verbatim}
+
 tr2 <- trainControl(
         method = 'repeatedcv',
-        repeats = 3,
-        number = 5)
+        number = 5,
+        repeats = 3, 
+        savePredictions = TRUE)
 
 m1 <- train(time ~ ., 
             data = melanoma,
@@ -524,6 +556,7 @@ m1 <- train(time ~ .,
 \frametitle{\insertframenumber~Crossvalidation}
 
 \begin{itemize}
+\item Seperate study
 \item Spatial
 \item Temporal
 \item By covariates
@@ -566,6 +599,7 @@ m1 <- train(time ~ .,
 \item MAE, $R^2$
 \item RMSE, correlation are less interpretable
 \item Correlation isn't quite measuring what you think.
+\item Scatter plots!
 \end{itemize}
 \end{frame} 
 
@@ -580,6 +614,7 @@ m1 <- train(time ~ .,
 \item I can predict COVID infection with $\sim$97\% accuracy by saying noone has COVID. 
 \item Kappa, AUC.
 \item Accuracy does *not* account for imbalance.
+\item Confusion matrices.
 \end{itemize}
 \end{frame} 
 
@@ -603,11 +638,115 @@ m1 <- train(time ~ .,
 
 
 \begin{frame}
-\frametitle{\insertframenumber~No free lunch}
+\frametitle{\insertframenumber~No free lunch theorem}
 \begin{itemize}
 \item No such thing as a universal, `best' machine learning model.
 \item For any model, there exists a dataset for which that model is the best.
 \end{itemize}
+
+\end{frame} 
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Coffee. Any questions?}
+
+
+\end{frame} 
+
+
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Caret details}
+\begin{enumerate}
+\item Fit model to all training sets and predict all test sets with all hyperparameter combinations.
+\item Select best hyperparameter combination.
+\item Fit model using best hyperparameter set to all data.
+\item If y is a factor, automatically do classification.
+\item Some models are only regression, some only classification, some both.
+\item Caret will ask you if you want to install additional packages.
+\item Some models don't handle NAs. Error messages not always very useful.
+\end{enumerate}
+
+\end{frame} 
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~Caret functions and internals}
+\begin{Verbatim}
+
+plot(m1)
+
+# Uses model trained on full dataset.
+# Use this to test on a outer validation dataset.
+predict(m1) 
+
+m1$results # Validation results.
+m1$pred # All validation predictions (all hyperpars)
+m1$finalModel # The final fitted model
+class(m1$finalModel)
+
+
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~Grid search for models with many hyperparameters}
+\begin{Verbatim}
+
+tr_random <- trainControl(
+              search = 'random',
+              method = 'repeatedcv',
+              savePredictions = TRUE)
+
+m_random <- train(time ~ ., 
+            data = melanoma,
+            method = 'enet',
+            tuneLength = 20,
+            metric = 'MAE',
+            trControl = tr1)
+            
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{\insertframenumber~Grid search for models with many hyperparameters}
+\begin{Verbatim}
+
+# Give an explit dataframe of parameters
+# Need to look up the exact names 
+
+gr <- data.frame(lambda = c(1e-4, 1e-5, 1e-6),
+                 fraction = c(0.1, 0.5, 0.5))
+m_df <- train(time ~ ., 
+            data = melanoma,
+            method = 'enet',
+            tuneGrid = gr,
+            metric = 'MAE',
+            trControl = tr_random)
+plot(m_df)
+
+            
+\end{Verbatim}
+
+\end{frame} 
+
+
+
+\begin{frame}
+\frametitle{\insertframenumber~Any questions?}
+
 
 \end{frame} 
 
@@ -622,8 +761,10 @@ m1 <- train(time ~ .,
 # This is THE most important part.
 tr2 <- trainControl(
         method = 'repeatedcv',
-        repeats = 3,
-        number = 5)
+        number = 5,
+        repeats = 3, 
+        savePredictions = TRUE)
+
 
 \end{Verbatim}
 
@@ -715,7 +856,7 @@ plotCV(m2)
 m3 <- train(time ~ ., 
             data = melanoma,
             method = 'ranger',
-            tuneLength = 10,
+            tuneLength = 5,
             metric = my_metric,
             trControl = tr2)
 
@@ -734,7 +875,7 @@ plotCV(m3)
 m4 <- train(time ~ ., 
             data = melanoma,
             method = 'xgbTree',
-            tuneLength = 10,
+            tuneLength = 3,
             metric = my_metric,
             trControl = tr2)
 
@@ -748,7 +889,7 @@ m4 <- train(time ~ .,
 \begin{Verbatim}
 
 # Try a few models. No free lunch.
-m4 <- train(time ~ ., 
+m5 <- train(time ~ ., 
             data = melanoma,
             method = 'nnet',
             tuneLength = 10,
@@ -879,6 +1020,7 @@ m4 <- train(time ~ .,
 \item Molnar 2020 Interpretable Machine Learning: A Guide for Making Black Box Models Explainable.
 \item Kuhn 2013 Applied Predictive Modeling.
 \item Lucas 2020 A translucent box: interpretable machine learning in ecology.
+\item Bhatt et al. 2017 Improved prediction accuracy for disease risk mapping using Gaussian process stacked generalization
 \end{itemize}
 \end{frame} 
 
