@@ -1,30 +1,19 @@
-Caret and zoon: machine learning, ecology and domain specific package systems
-===============================================================================
+Machine learning workshop
+=========================
 
-Talk on two R packages, caret and zoon. 
-Presenting to the Oxford rusers group. 
-I'll discuss the scope and uses of both packages. 
-I'll also discuss whether domain specific package ecosystems (which zoon aims to be) are a good idea and what makes them useful, difficult and different.
+A workshop taught at the Centre of Environment and Health, Imperial College.
 
-[adobe_slides.pdf](adobe_slides.pdf) should have working gifs as long as you open in adobe reader or something.
-It's made with `pdftk tim-lucas-ox-rusers.pdf output adobe_slides.pdf uncompress`.
-Horrible hack but oh well.
-
-[tim-lucas-ox-rusers.pdf](tim-lucas-ox-rusers.pdf) is the latex output.
+The first time the workshop was delivered was in Dec 2020. We are planning a second delivery in 2021.
 
 
-Links 
-------
+The only important files are:
 
-[slideshare](https://www.slideshare.net/timcdlucas/caret-and-zoon-machine-learning-ecology-and-domain-specific-package-systems)	
+lucas_ml_workshop.pdf
 
-[Caret documentation](https://topepo.github.io/caret/index.html)
+lucas_ml_workshop.tex
 
-[zoon on gitub](https://github.com/zoonproject/zoon)
+The pdf and tex file for the slides used. 
 
-[zoon in press paper](https://github.com/zoonproject/zoon_app_paper)
+lucas_ml_workshop.R
 
-
-
-![Zoon workflow](diagrams.png)
-
+The script used to run all the examples.
