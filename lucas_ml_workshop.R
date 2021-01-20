@@ -74,9 +74,9 @@ plotCV <- function(t, print = TRUE, smooth = TRUE, alpha = 1){
   
 
   if('weights' %in% names(d)){
-    p <- ggplot(d, aes(obs, pred, size = weights, colour = 'a'))
+    p <- ggplot(d, aes(pred, obs, size = weights, colour = 'a'))
   } else { 
-    p <- ggplot(d, aes(obs, pred, colour = 'a'))
+    p <- ggplot(d, aes(pred, obs, colour = 'a'))
   }
   p <- p + 
     geom_point(alpha = alpha) + 
